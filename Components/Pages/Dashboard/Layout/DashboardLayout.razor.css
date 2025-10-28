@@ -42,7 +42,7 @@
 
 .main {
     padding: 16px;
-    min-height: 150vh;
+    min-height: 50vh;
     border-radius: 0 0 8px 8px;
     background-color: #c0d2d4;
     box-shadow: 0 5px 10px -5px dimgray;

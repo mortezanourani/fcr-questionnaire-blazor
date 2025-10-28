@@ -2,6 +2,39 @@
 
 <h3>نمونه های شرکت کننده</h3>
 
-@code {
+<hr />
 
+@if (participants is null)
+{
+    <h4>در حال بازگزاری لیست</h4>
+}
+else
+{
+    @if (participants.Count() < 1)
+    {
+        <h4>هیچ نمونه ای یافت نشد.</h4>
+    }
+    else
+    {
+        <ul>
+            @foreach (Participant participant in participants!)
+            {
+                <li>@participant.SubmissionTime (@participant.Responses.Count())</li>
+            }
+        </ul>
+    }
+}
+
+@code {
+    private ApplicationDbContext context { get; set; } = null!;
+
+    private List<Participant> participants = new List<Participant>();
+    protected override async Task OnInitializedAsync()
+    {
+        context = DbContextFactory.CreateDbContext();
+
+        participants = await context
+            .Participants
+            .ToListAsync();
+    }
 }

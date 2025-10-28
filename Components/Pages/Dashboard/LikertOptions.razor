@@ -2,6 +2,39 @@
 
 <h3>گزینه های پرسشنامه ها بر مبنای لیکرت پنج درجه</h3>
 
-@code {
+<hr />
 
+@if (likertOptions is null)
+{
+    <h4>در حال بازگزاری لیست</h4>
+}
+else
+{
+    @if (likertOptions.Count() < 1)
+    {
+        <h4>هیچ گزینه ای برای درجه های لیکرت یافت نشد.</h4>
+    }
+    else
+    {
+        <ul>
+            @foreach (LikertOption option in likertOptions!)
+            {
+                <li>@option.Label (@option.Score)</li>
+            }
+        </ul>
+    }
+}
+
+@code {
+    private ApplicationDbContext context { get; set; } = null!;
+
+    private List<LikertOption> likertOptions = new List<LikertOption>();
+    protected override async Task OnInitializedAsync()
+    {
+        context = DbContextFactory.CreateDbContext();
+
+        likertOptions = await context
+            .LikertOptions
+            .ToListAsync();
+    }
 }
