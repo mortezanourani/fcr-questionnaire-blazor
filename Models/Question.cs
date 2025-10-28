@@ -1,4 +1,4 @@
-﻿namespace FCR.Data;
+﻿namespace FCR.Models;
 
 public class Question
 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace FCR.Data;
+namespace FCR.Models;
 
 public class Questionnaire
 {
