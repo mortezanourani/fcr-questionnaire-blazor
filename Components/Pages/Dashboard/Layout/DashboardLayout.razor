@@ -1,0 +1,32 @@
+﻿@inherits LayoutComponentBase
+@layout MainLayout
+
+<div class="container">
+    <nav class="navbar">
+        <ul class="nav-menu">
+            <li class="menu-item">
+                <NavLink href="/Dashboard" Match="NavLinkMatch.All">نتایج</NavLink>
+            </li>
+            <li class="menu-item">
+                <NavLink href="/Dashboard/Questionnaires">پرسشنامه ها</NavLink>
+            </li>
+            <li class="menu-item">
+                <NavLink href="/Dashboard/LikertOptions">گزینه های لیکرت</NavLink>
+            </li>
+            <li class="menu-item">
+                <NavLink href="/Dashboard/Participants">نمونه ها</NavLink>
+            </li>
+        </ul>
+    </nav>
+    <main class="main">
+        <div class="content">
+            @Body
+        </div>
+    </main>
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>

@@ -1,3 +1,9 @@
+.container {
+    padding: 0;
+    margin: 0 auto 24px;
+    max-width: 1120px;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
