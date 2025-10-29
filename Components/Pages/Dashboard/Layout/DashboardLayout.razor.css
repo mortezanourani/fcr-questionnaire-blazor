@@ -1,11 +1,17 @@
+::deep .container {
+    padding: 0;
+    margin: 0 auto;
+    max-width: 1120px;
+}
+
 .navbar {
     top: 0;
     position: sticky;
-    background-color: whitesmoke;
+    background-color: var(--primary-color);
     width: 100%;
-    margin: 0 -16px 0px;
-    padding: 0 16px;
-    box-shadow: 0 8px 4px -8px dimgray;
+    height: 42px;
+    margin: 0;
+    padding: 0;
     z-index: 9999;
 }
 
@@ -17,7 +23,7 @@
         flex-direction: row;
         justify-content: flex-start;
         align-items: center;
-        gap: 16px;
+        gap: 32px;
         list-style: none;
     }
 
@@ -26,60 +32,193 @@
         }
 
             .navbar .nav-menu .menu-item ::deep a {
-                display: block;
-                padding: 16px 4px 4px;
-                font-size: 15px;
-                text-decoration: none;
+                padding: 10px 4px;
+                display: flex;
+                gap: 16px;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 13px;
                 font-weight: 500;
-                color: #0d2137;
+                color: var(--light-color);
+                background: none;
             }
 
                 .navbar .nav-menu .menu-item ::deep a:hover,
                 .navbar .nav-menu .menu-item ::deep a.active {
-                    padding-bottom: 2px;
-                    border-bottom: 2px solid #0d2137;
+                    opacity: 0.8;
                 }
 
 .main {
-    padding: 16px;
-    min-height: 50vh;
+    padding: 0;
     border-radius: 0 0 8px 8px;
-    background-color: #c0d2d4;
-    box-shadow: 0 5px 10px -5px dimgray;
+    background-color: var(--light-color);
 }
 
-    .main .content ::deep.page-header {
-        margin: 0 -16px 16px;
-        padding: 0 16px 4px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: flex-end;
-        gap: 16px;
-        box-shadow: 0 3px 5px -5px dimgray;
+    .main ::deep.page-header {
+        margin: 0 auto;
+        padding: 0;
+        height: 48px;
+        position: sticky;
+        top: 42px;
+        border-bottom: 1px solid var(--primary-color);
     }
 
-        .main .content ::deep.page-header .page-title {
-            height: 32px;
-            font-size: 15px;
-            font-weight: 500;
-        }
-
-        .main .content ::deep.page-header .page-navbar {
-            height: 32px;
+        .main ::deep.page-header .container {
+            height: inherit;
+            margin: 0 auto 16px;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-end;
             gap: 16px;
+            box-shadow: 0 3px 5px -5px whitesmoke;
         }
 
-        .main .content ::deep.page-header .page-navbar a {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            gap: 16px;
+            .main ::deep.page-header .container .page-title {
+                height: 32px;
+                font-size: 15px;
+                font-weight: 500;
+                color: var(--primary-color);
+            }
+
+            .main ::deep.page-header .container .page-navbar {
+                height: 32px;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                gap: 16px;
+            }
+
+    .main ::deep .content {
+        padding-top: 16px;
+    }
+
+::deep .quickgrid {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+    ::deep .quickgrid thead tr {
+        background-color: var(--secondary-color);
+        color: var(--light-color);
+    }
+
+        ::deep .quickgrid thead tr th {
+            padding: 12px 12px 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+            ::deep .quickgrid thead tr th * {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            ::deep .quickgrid thead tr th .col-title {
+                font-size: 13px;
+                font-weight: 600;
+                justify-content: center;
+            }
+
+            ::deep .quickgrid thead tr th:first-child .col-title {
+                justify-content: right;
+            }
+
+    ::deep .quickgrid tbody tr {
+        background: var(--light-color);
+    }
+
+        ::deep .quickgrid tbody tr:nth-child(2n) {
+            background: var(--card-bg-color);
+        }
+
+        ::deep .quickgrid tbody tr:hover {
+            transform: scale(1.01);
+            box-shadow: 0 0 8px 0px var(--secondary-color);
+        }
+
+        ::deep .quickgrid tbody tr td {
+            padding: 8px 12px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+            ::deep .quickgrid tbody tr td:first-child {
+                text-align: right;
+            }
+
+            ::deep .quickgrid tbody tr td:last-child {
+                text-align: left;
+                opacity: 0;
+                width: auto;
+                display: flex;
+                justify-content: flex-end;
+                gap: 16px;
+            }
+
+        ::deep .quickgrid tbody tr:hover td:last-child {
+            opacity: 1;
+        }
+
+::deep .form-wrapper {
+    width: 50%;
+    margin: 0 auto;
+    padding: 12px;
+    border: 1px solid var(--secondary-color);
+    background: var(--card-bg-color);
+    border-radius: 6px;
+}
+
+    ::deep .form-wrapper .form-row {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+        gap: 4px;
+    }
+
+    ::deep .form-wrapper .form-row:last-child {
+        margin-bottom: 0px;
+    }
+
+        ::deep .form-wrapper .form-row > * {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        ::deep .form-wrapper .form-row .form-label {
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        ::deep .form-wrapper .form-row .form-control {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 400;
+            padding: 4px 8px;
+            border-radius: 4px;
+            outline: none;
+            border: 1px solid gray;
+            background: var(--light-color);
+        }
+
+        ::deep .form-wrapper .form-row textarea {
+            min-height: 120px;
+            resize: none;
+        }
+
+        ::deep .form-wrapper .form-row button {
+            font-size: 14px;
+            font-weight: 500;
+            padding: 6px 12px;
+            width: 50%;
+            margin-right: auto;
         }
 
 #blazor-error-ui {

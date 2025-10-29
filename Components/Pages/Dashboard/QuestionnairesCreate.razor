@@ -1,0 +1,49 @@
+﻿@page "/Dashboard/Questionnaires/Create"
+
+<PageTitle>اضافه کردن پرسشنامه</PageTitle>
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">ایجاد پرسشنامه جدید</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="/Dashboard/Questionnaires">بازگشت به فهرست پرسشنامه ها</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    <div class="row">
+        <div class="form-wrapper">
+            <EditForm method="post" Model="questionnaire" OnValidSubmit="AddQuestionnaire" FormName="create" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="form-row">
+                    <label for="title" class="form-label">عنوان پرسشنامه</label>
+                    <InputText id="title" @bind-Value="questionnaire.Title" class="form-control" />
+                    <ValidationMessage For="() => questionnaire.Title" class="text-danger" />
+                </div>
+                <div class="form-row">
+                    <label for="description" class="form-label">توضیح پرسشنامه</label>
+                    <InputTextArea id="description" @bind-Value="questionnaire.Description" class="form-control" />
+                    <ValidationMessage For="() => questionnaire.Description" class="text-danger" />
+                </div>
+                <div class="form-row">
+                    <button type="submit">ثبت</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Questionnaire questionnaire { get; set; } = new();
+
+    private async Task AddQuestionnaire()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        context.Questionnaires.Add(questionnaire);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/Dashboard/Questionnaires");
+    }
+}

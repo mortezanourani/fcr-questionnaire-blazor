@@ -1,40 +1,44 @@
 ﻿@page "/Dashboard/Participants"
 
 <header class="page-header">
-    <h3 class="page-title">نمونه های شرکت کننده</h3>
+    <div class="container">
+        <h3 class="page-title">نمونه های شرکت کننده</h3>
+    </div>
 </header>
 
-@if (participants is null)
-{
-    <h4>در حال بازگزاری لیست</h4>
-}
-else
-{
-    @if (participants.Count() < 1)
+<div class="content container">
+    @if (participants is null)
     {
-        <h4>هیچ نمونه ای یافت نشد.</h4>
+        <h4>در حال بازگزاری لیست</h4>
     }
     else
     {
-        <ul>
-            @foreach (Participant participant in participants!)
-            {
-                <li>@participant.SubmissionTime (@participant.Responses.Count())</li>
-            }
-        </ul>
+        @if (participants.Count() < 1)
+        {
+            <h4>هیچ نمونه ای یافت نشد.</h4>
+        }
+        else
+        {
+            <QuickGrid Items="participants.AsQueryable()">
+                <PropertyColumn IsDefaultSortColumn=true Title="تاریخ پاسخگویی" Property="@(paticipant => paticipant.SubmissionTime)" />
+                <PropertyColumn Title="تعداد پاسخ ها" Property="@(paticipant => paticipant.Responses!.Count)" />
+                <TemplateColumn Title="">
+                    <NavLink class="small-link" href="@($"/Dashboard/Paticipants/Details/{context.Id}")">جزئیات</NavLink>
+                </TemplateColumn>
+            </QuickGrid>
+        }
     }
-}
+</div>
 
 @code {
-    private ApplicationDbContext context { get; set; } = null!;
-
     private List<Participant> participants = new List<Participant>();
+
     protected override async Task OnInitializedAsync()
     {
-        context = DbContextFactory.CreateDbContext();
+        using var context = DbContextFactory.CreateDbContext();
 
-        participants = await context
-            .Participants
+        participants = await context.Participants
+            .Include(p => p.Responses)
             .ToListAsync();
     }
 }

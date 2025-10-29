@@ -1,44 +1,47 @@
 ﻿@page "/Dashboard/Questionnaires"
 
 <header class="page-header">
-    <h3 class="page-title">پرسشنامه ها</h3>
-    <nav class="page-navbar">
-        <NavLink href="/Dashboard/Questionnaires/Create">
-            <img src="/icons/questionnaire-add.svg" />
-        </NavLink>
-    </nav>
+    <div class="container">
+        <h3 class="page-title">پرسشنامه ها</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="/Dashboard/Questionnaires/Create">پرسشنامه جدید</NavLink>
+        </nav>
+    </div>
 </header>
 
-@if (questionnaires is null)
-{
-    <h4>در حال بازگزاری لیست</h4>
-}
-else
-{
-    @if (questionnaires.Count() < 1)
+<div class="content container">
+    @if (questionnaires is null)
     {
-        <h4>هیچ پرسشنامه ای یافت نشد.</h4>
+        <h4>در حال بازگزاری لیست</h4>
     }
     else
     {
-        <QuickGrid Items="questionnaires.AsQueryable()">
-            <PropertyColumn Title="عنوان پرسشنامه" Property="@(questionnaire => questionnaire.Title)" />
-            <PropertyColumn Title="توضیحات پرسشنامه" Property="@(questionnaire => questionnaire.Description)" />
-            <PropertyColumn Title="تعداد گویه" Property="@(questionnaire => questionnaire.Questions!.Count)" />
-            <TemplateColumn Title="">
-                <NavLink href="@($"/Dashboard/Questionnaires/Edit/{context.Id}")">ویرایش</NavLink>
-            </TemplateColumn>
-        </QuickGrid>
+        @if (questionnaires.Count() < 1)
+        {
+            <h4>هیچ پرسشنامه ای یافت نشد.</h4>
+        }
+        else
+        {
+            <QuickGrid Items="questionnaires.AsQueryable()">
+                <PropertyColumn Title="عنوان پرسشنامه" Property="@(questionnaire => questionnaire.Title)" />
+                <PropertyColumn Title="توضیحات پرسشنامه" Property="@(questionnaire => questionnaire.Description)" />
+                <PropertyColumn Title="تعداد گویه" Property="@(questionnaire => questionnaire.Questions!.Count)" />
+                <TemplateColumn Title="">
+                    <NavLink class="small-link" href="@($"/Dashboard/Questionnaires/Edit/{context.Id}")">ویرایش</NavLink>
+                    <NavLink class="small-link" href="@($"/Dashboard/Questionnaires/{context.Id}/Questions")">گویه ها</NavLink>
+                    <NavLink class="small-link red-link" href="@($"/Dashboard/Questionnaires/Delete/{context.Id}")">حذف</NavLink>
+                </TemplateColumn>
+            </QuickGrid>
+        }
     }
-}
+</div>
 
 @code {
-    private ApplicationDbContext context { get; set; } = null!;
-
     private List<Questionnaire> questionnaires = new List<Questionnaire>();
+
     protected override async Task OnInitializedAsync()
     {
-        context = DbContextFactory.CreateDbContext();
+        using var context = DbContextFactory.CreateDbContext();
 
         questionnaires = await context
             .Questionnaires

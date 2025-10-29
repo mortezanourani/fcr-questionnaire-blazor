@@ -1,0 +1,84 @@
+﻿@page "/Dashboard/Questionnaires/Edit/{Id:guid}"
+
+<PageTitle>ویرایش پرسشنامه</PageTitle>
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">پرسشنامه @questionnaire?.Title</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="@($"/Dashboard/Questionnaires/{Id}/Questions")">گویه ها</NavLink>
+            <NavLink class="small-link" href="/Dashboard/Questionnaires">بازگشت به فهرست پرسشنامه ها</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    @if (questionnaire is null)
+    {
+        <h4>در حال بازگزاری لیست</h4>
+    }
+    else
+    {
+        <div class="row">
+            <div class="form-wrapper">
+                <EditForm method="post" Model="questionnaire" OnValidSubmit="UpdateQuestionnaire" FormName="edit" Enhance>
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger" role="alert" />
+                    <input type="hidden" name="questionnaire.Id" value="@questionnaire.Id" hidden />
+                    <div class="form-row">
+                        <label for="title" class="form-label">عنوان پرسشنامه</label>
+                        <InputText id="title" @bind-Value="questionnaire.Title" class="form-control" />
+                        <ValidationMessage For="() => questionnaire.Title" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <label for="description" class="form-label">توضیح پرسشنامه</label>
+                        <InputTextArea id="description" @bind-Value="questionnaire.Description" class="form-control" />
+                        <ValidationMessage For="() => questionnaire.Description" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <button type="submit">ثبت</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Questionnaire? questionnaire { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        questionnaire ??= await context.Questionnaires
+            .Include(q => q.Questions)
+            .FirstOrDefaultAsync(q => q.Id == Id);
+
+        if (questionnaire is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task UpdateQuestionnaire()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        context.Attach(questionnaire!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw;
+        }
+
+        NavigationManager.NavigateTo("/Dashboard/Questionnaires");
+    }
+}

@@ -1,18 +1,64 @@
+:root {
+    --primary-color: #823794;
+    --secondary-color: #a47dab;
+    --light-color: whitesmoke;
+    --black-color: #36382e;
+    --card-bg-color: #d6befa;
+}
+
 html, body {
     margin: 0;
     padding: 0;
     direction: rtl;
-    font-family: IRANSans;
     background-color: whitesmoke;
 }
+
+    body * {
+        font-family: IRANSans;
+    }
+
+a {
+    text-decoration: none;
+}
+
+.small-link {
+    padding: 4px 0;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--black-color);
+}
+
+    .small-link:hover {
+        font-weight: 600;
+    }
+
+.red-link {
+    color: #f04040;
+}
+
+button {
+    outline: none;
+    border: none;
+    border-radius: 4px;
+    border: 1px solid var(--primary-color);
+    background: var(--primary-color);
+    color: var(--light-color);
+    transition: all ease 300ms;
+}
+
+    button:hover {
+        background: var(--light-color);
+        color: var(--primary-color);
+    }
 
 h1, h2, h3, h4, h5, h6 {
     margin: 0;
 }
 
-h1:focus {
-    outline: none;
-}
+    h1:focus {
+        outline: none;
+    }
 
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;

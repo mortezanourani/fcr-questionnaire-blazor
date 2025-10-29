@@ -1,8 +1,8 @@
 ﻿@inherits LayoutComponentBase
 @layout MainLayout
 
-<div class="container">
-    <nav class="navbar">
+<nav class="navbar">
+    <div class="container">
         <ul class="nav-menu">
             <li class="menu-item">
                 <NavLink href="/Dashboard" Match="NavLinkMatch.All">نتایج</NavLink>
@@ -17,13 +17,11 @@
                 <NavLink href="/Dashboard/Participants">نمونه ها</NavLink>
             </li>
         </ul>
-    </nav>
-    <main class="main">
-        <div class="content">
-            @Body
-        </div>
-    </main>
-</div>
+    </div>
+</nav>
+<main class="main">
+    @Body
+</main>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
