@@ -8,6 +8,6 @@ public class Question
 
     public string Text { get; set; } = null!;
 
-    public Guid QiestionnaireId { get; set; }
+    public Guid QuestionnaireId { get; set; }
     public Questionnaire Questionnaire { get; set; } = null!;
 }

@@ -1,0 +1,73 @@
+﻿@page "/Dashboard/Questions/Delete/{Id:guid}"
+
+<PageTitle>حذف گویه</PageTitle>
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">گویه ای از پرسشنامه @questionnaire?.Title</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="@($"/Dashboard/Questions/Edit/{Id}")">ویرایش این گویه</NavLink>
+            <NavLink class="small-link" href="@($"/Dashboard/Questionnaires/{questionnaire?.Id}/Questions")">بازگشت به فهرست گویه ها</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    @if (questionnaire is null || question is null)
+    {
+        <h4>در حال بارگزاری لیست</h4>
+    }
+    else
+    {
+        <div class="row">
+            <div class="form-wrapper">
+                <div class="form-row">
+                    <label class="form-label">عنوان پرسشنامه</label>
+                    <p class="form-control">@questionnaire.Title</p>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">متن گویه</label>
+                    <p class="form-control">@question.Text</p>
+                </div>
+                <EditForm method="post" Model="question" OnValidSubmit="DeleteQuestion" FormName="delete" Enhance>
+                    <div class="form-row">
+                        <button type="submit" disabled="@(question is null)">از حذف این گویه اطمینان دارم</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Questionnaire? questionnaire;
+
+    private Question? question;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        question ??= await context.Questions
+            .Include(q => q.Questionnaire)
+            .FirstOrDefaultAsync(q => q.Id == Id);
+
+        if (question is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+
+        questionnaire = question!.Questionnaire;
+    }
+
+    private async Task DeleteQuestion()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        context.Questions.Remove(question!);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo($"/Dashboard/Questionnaires/{questionnaire!.Id}/Questions");
+    }
+}

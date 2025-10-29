@@ -124,12 +124,14 @@
                 justify-content: center;
             }
 
+            ::deep .quickgrid thead tr th.text-right .col-title,
             ::deep .quickgrid thead tr th:first-child .col-title {
                 justify-content: right;
             }
 
     ::deep .quickgrid tbody tr {
         background: var(--light-color);
+        background: #d6befa65;
     }
 
         ::deep .quickgrid tbody tr:nth-child(2n) {
@@ -148,6 +150,7 @@
             font-weight: 400;
         }
 
+            ::deep .quickgrid tbody tr td.text-right,
             ::deep .quickgrid tbody tr td:first-child {
                 text-align: right;
             }

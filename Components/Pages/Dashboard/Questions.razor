@@ -1,0 +1,61 @@
+﻿@page "/Dashboard/Questionnaires/{Id:guid}/Questions"
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">گویه های پرسشنامه @questionnaire?.Title</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="@($"/Dashboard/Questionnaires/{Id}/Questions/Create")">گویه جدید</NavLink>
+            <NavLink class="small-link" href="/Dashboard/Questionnaires">بازگشت به فهرست پرسشنامه ها</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    @if (questionnaire is null)
+    {
+        <h4>در حال بارگزاری لیست</h4>
+    }
+    else
+    {
+        @if (questions.Count() < 1)
+        {
+            <h4>هیچ گویه ای یافت نشد.</h4>
+        }
+        else
+        {
+            <QuickGrid Items="questions.AsQueryable()">
+                <PropertyColumn IsDefaultSortColumn=true Title="ردیف" Property="@(question => question.Position)" />
+                <PropertyColumn Class="text-right" Title="متن گویه" Property="@(question => question.Text)" />
+                <TemplateColumn Title="">
+                    <NavLink class="small-link" href="@($"/Dashboard/Questions/Edit/{context.Id}")">ویرایش</NavLink>
+                    <NavLink class="small-link red-link" href="@($"/Dashboard/Questions/Delete/{context.Id}")">حذف</NavLink>
+                </TemplateColumn>
+            </QuickGrid>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Questionnaire? questionnaire;
+
+    private List<Question> questions = new List<Question>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        questionnaire ??= await context.Questionnaires
+            .Include(q => q.Questions)
+            .FirstOrDefaultAsync(q => q.Id == Id);
+
+        if (questionnaire is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+
+        questions = questionnaire!.Questions.ToList();
+    }
+}

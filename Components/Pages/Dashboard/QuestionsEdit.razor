@@ -1,0 +1,93 @@
+﻿@page "/Dashboard/Questions/Edit/{Id:guid}"
+
+<PageTitle>ویرایش گویه</PageTitle>
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">گویه ای از پرسشنامه @questionnaire?.Title</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="@($"/Dashboard/Questions/Delete/{Id}")">حذف این گویه</NavLink>
+            <NavLink class="small-link" href="@($"/Dashboard/Questionnaires/{questionnaire?.Id}/Questions")">بازگشت به فهرست گویه ها</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    @if (question is null)
+    {
+        <h4>در حال بارگزاری لیست</h4>
+    }
+    else
+    {
+        <div class="row">
+            <div class="form-wrapper">
+                <div class="form-row">
+                    <label class="form-label">عنوان پرسشنامه</label>
+                    <p class="form-control">@questionnaire?.Title</p>
+                </div>
+                <EditForm method="post" Model="question" OnValidSubmit="UpdateQuestion" FormName="edit" Enhance>
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger" role="alert" />
+                    <input type="hidden" name="question.QuestionnaireId" value="@question.QuestionnaireId" hidden />
+                    <input type="hidden" name="question.Id" value="@Id" hidden />
+                    <div class="form-row">
+                        <label for="position" class="form-label">شماره گویه</label>
+                        <InputNumber id="position" @bind-Value="question.Position" class="form-control" />
+                        <ValidationMessage For="() => question.Position" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <label for="text" class="form-label">متن عبارت گویه</label>
+                        <InputText id="text" @bind-Value="question.Text" class="form-control" />
+                        <ValidationMessage For="() => question.Text" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <button type="submit">ثبت</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Question? question { get; set; } = null!;
+
+    private Questionnaire? questionnaire;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        question ??= await context.Questions
+            .Include(q => q.Questionnaire)
+            .FirstOrDefaultAsync(q => q.Id == Id);
+
+        if (question is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+
+        questionnaire = question!.Questionnaire;
+    }
+
+    private async Task UpdateQuestion()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        context.Attach(question!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw;
+        }
+
+        NavigationManager.NavigateTo($"/Dashboard/Questionnaires/{question!.QuestionnaireId}/Questions");
+    }
+}
