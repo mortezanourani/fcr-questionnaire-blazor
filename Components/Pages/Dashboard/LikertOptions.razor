@@ -1,8 +1,14 @@
 ﻿@page "/Dashboard/LikertOptions"
 
-<h3>گزینه های پرسشنامه ها بر مبنای لیکرت پنج درجه</h3>
+<header class="page-header">
+    <h3 class="page-title">گزینه های پرسشنامه ها بر مبنای لیکرت پنج درجه</h3>
+    <nav class="page-navbar">
+        <NavLink href="/Dashboard/LikertOptions/Create">
+            <img src="/icons/likert-option-add.svg" />
+        </NavLink>
+    </nav>
+</header>
 
-<hr />
 
 @if (likertOptions is null)
 {

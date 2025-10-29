@@ -1,8 +1,13 @@
 ﻿@page "/Dashboard/Questionnaires"
 
-<h3>پرسشنامه ها</h3>
-
-<hr />
+<header class="page-header">
+    <h3 class="page-title">پرسشنامه ها</h3>
+    <nav class="page-navbar">
+        <NavLink href="/Dashboard/Questionnaires/Create">
+            <img src="/icons/questionnaire-add.svg" />
+        </NavLink>
+    </nav>
+</header>
 
 @if (questionnaires is null)
 {
@@ -16,12 +21,14 @@ else
     }
     else
     {
-        <ul>
-            @foreach(Questionnaire questionnaire in questionnaires!)
-            {
-                <li>@questionnaire.Title (@questionnaire.Questions.Count())</li>
-            }
-        </ul>
+        <QuickGrid Items="questionnaires.AsQueryable()">
+            <PropertyColumn Title="عنوان پرسشنامه" Property="@(questionnaire => questionnaire.Title)" />
+            <PropertyColumn Title="توضیحات پرسشنامه" Property="@(questionnaire => questionnaire.Description)" />
+            <PropertyColumn Title="تعداد گویه" Property="@(questionnaire => questionnaire.Questions!.Count)" />
+            <TemplateColumn Title="">
+                <NavLink href="@($"/Dashboard/Questionnaires/Edit/{context.Id}")">ویرایش</NavLink>
+            </TemplateColumn>
+        </QuickGrid>
     }
 }
 

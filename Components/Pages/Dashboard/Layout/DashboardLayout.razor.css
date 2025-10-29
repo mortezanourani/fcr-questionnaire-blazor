@@ -48,6 +48,40 @@
     box-shadow: 0 5px 10px -5px dimgray;
 }
 
+    .main .content ::deep.page-header {
+        margin: 0 -16px 16px;
+        padding: 0 16px 4px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 16px;
+        box-shadow: 0 3px 5px -5px dimgray;
+    }
+
+        .main .content ::deep.page-header .page-title {
+            height: 32px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .main .content ::deep.page-header .page-navbar {
+            height: 32px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .main .content ::deep.page-header .page-navbar a {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
