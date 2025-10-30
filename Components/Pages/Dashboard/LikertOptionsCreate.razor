@@ -1,0 +1,49 @@
+﻿@page "/Dashboard/LikertOptions/Create"
+
+<PageTitle>اضافه کردن گزینه لیکرت</PageTitle>
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">ایجاد گزینه جدید</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="/Dashboard/LikertOptions">بازگشت به فهرست گزینه های لیکرت</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    <div class="row">
+        <div class="form-wrapper">
+            <EditForm method="post" Model="likertOption" OnValidSubmit="AddOption" FormName="create" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="form-row">
+                    <label for="label" class="form-label">متن گزینه</label>
+                    <InputText id="label" @bind-Value="likertOption.Label" class="form-control" />
+                    <ValidationMessage For="() => likertOption.Label" class="text-danger" />
+                </div>
+                <div class="form-row">
+                    <label for="score" class="form-label">نمره گزینه</label>
+                    <InputNumber id="score" @bind-Value="likertOption.Score" class="form-control" />
+                    <ValidationMessage For="() => likertOption.Score" class="text-danger" />
+                </div>
+                <div class="form-row">
+                    <button type="submit">ثبت</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private LikertOption likertOption { get; set; } = new();
+
+    private async Task AddOption()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        context.LikertOptions.Add(likertOption);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/Dashboard/LikertOptions");
+    }
+}

@@ -1,0 +1,68 @@
+﻿@page "/Dashboard/LikertOptions/Delete/{Id:guid}"
+
+<PageTitle>حذف گزینه لیکرت</PageTitle>
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">گزینه @likertOption?.Label</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="@($"/Dashboard/LikertOptions/Edit/{Id}")">ویرایش این گزینه</NavLink>
+            <NavLink class="small-link" href="/Dashboard/LikertOptions">بازگشت به فهرست گزینه های لیکرت</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    @if (likertOption is null)
+    {
+        <h4>در حال بارگزاری...</h4>
+    }
+    else
+    {
+        <div class="row">
+            <div class="form-wrapper">
+                <div class="form-row">
+                    <label class="form-label">متن گزینه</label>
+                    <p class="form-control">@likertOption.Label</p>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">نمره گزینه</label>
+                    <p class="form-control">@likertOption.Score</p>
+                </div>
+                <EditForm method="post" Model="likertOption" OnValidSubmit="DeleteOption" FormName="delete" Enhance>
+                    <div class="form-row">
+                        <button type="submit" disabled="@(likertOption is null)">از حذف این گزینه اطمینان دارم</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private LikertOption? likertOption;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        likertOption ??= await context.LikertOptions
+            .FirstOrDefaultAsync(q => q.Id == Id);
+
+        if (likertOption is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task DeleteOption()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        context.LikertOptions.Remove(likertOption!);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/Dashboard/LikertOptions");
+    }
+}
