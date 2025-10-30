@@ -1,0 +1,61 @@
+﻿@page "/Dashboard/Scales/{Id:guid}/Options"
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">گزینه های مقیاس @scale?.Title</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="@($"/Dashboard/Scales")">بازگشت به فهرست مقیاس ها</NavLink>
+            <NavLink class="small-link" href="@($"/Dashboard/Scales/{Id}/Options/Create")">گزینه جدید</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    @if (scale is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        @if (options.Count() < 1)
+        {
+            <h4>هیچ گزینه ای یافت نشد.</h4>
+        }
+        else
+        {
+            <QuickGrid Items="options.AsQueryable()">
+                <PropertyColumn Title="عنوان گزینه" Property="@(option => option.Label)" />
+                <PropertyColumn IsDefaultSortColumn=true Title="نمره گزینه" Property="@(option => option.Score)" />
+                <TemplateColumn Title="">
+                    <NavLink class="small-link" href="@($"/Dashboard/Options/Edit/{context.Id}")">ویرایش</NavLink>
+                    <NavLink class="small-link red-link" href="@($"/Dashboard/Options/Delete/{context.Id}")">حذف</NavLink>
+                </TemplateColumn>
+            </QuickGrid>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Scale? scale;
+
+    private List<Option> options = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        scale ??= await context.Scales
+            .Include(s => s.Options)
+            .FirstOrDefaultAsync(s => s.Id == Id);
+
+        if (scale is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+
+        options = scale!.Options.ToList();
+    }
+}

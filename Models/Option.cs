@@ -1,6 +1,6 @@
 ﻿namespace FCR.Models;
 
-public class LikertOption
+public class Option
 {
     public Guid Id { get; set; }
 
@@ -8,5 +8,6 @@ public class LikertOption
 
     public string Label { get; set; } = null!;
 
-    public bool Reverse { get; set; } = false;
+    public Guid ScaleId { get; set; }
+    public Scale Scale { get; set; } = null!;
 }

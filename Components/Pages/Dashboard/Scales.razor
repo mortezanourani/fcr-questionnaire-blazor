@@ -1,0 +1,49 @@
+﻿@page "/Dashboard/Scales"
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">مقیاس ها</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="/Dashboard/Scales/Create">مقیاس جدید</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    @if (scales is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        @if (scales.Count() < 1)
+        {
+            <h4>هیچ مقیاسی یافت نشد.</h4>
+        }
+        else
+        {
+            <QuickGrid Items="scales.AsQueryable()">
+                <PropertyColumn IsDefaultSortColumn=true Title="عنوان مقیاس" Property="@(scale => scale.Title)" />
+                <PropertyColumn Title="تعداد گزینه" Property="@(scale => scale.Options!.Count)" />
+                <TemplateColumn Title="">
+                    <NavLink class="small-link" href="@($"/Dashboard/Scales/Edit/{context.Id}")">ویرایش</NavLink>
+                    <NavLink class="small-link" href="@($"/Dashboard/Scales/{context.Id}/Options")">گزینه ها</NavLink>
+                    <NavLink class="small-link red-link" href="@($"/Dashboard/Scales/Delete/{context.Id}")">حذف</NavLink>
+                </TemplateColumn>
+            </QuickGrid>
+        }
+    }
+</div>
+
+@code {
+    private List<Scale> scales = new List<Scale>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        scales = await context.Scales
+            .Include(q => q.Options)
+            .ToListAsync();
+    }
+}

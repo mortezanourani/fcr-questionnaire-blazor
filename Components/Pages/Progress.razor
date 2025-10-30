@@ -1,0 +1,53 @@
+﻿@page "/Progress"
+
+@rendermode InteractiveServer
+
+<main class="container">
+    <div class="content">
+        @if (participant is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            if(Questions is null)
+            {
+                <Loading />
+            }
+            else
+            {
+                <QuickGrid Items="Questions.AsQueryable()">
+                    <PropertyColumn Property="@(q => $"({q.Position}). {q.Text}")" />
+                </QuickGrid>
+            }
+        }
+    </div>
+</main>
+
+@code {
+    private Participant? participant;
+
+    private List<Question>? Questions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        Questions = await context.Questions
+            .Include(q => q.Questionnaire)
+            .OrderBy(q => q.Position)
+            .ToListAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            using var context = DbContextFactory.CreateDbContext();
+            var localId = await localStorage.GetItemAsync<string>("participantId");
+            participant ??= await context.Participants
+                .FirstOrDefaultAsync(p => p.Id.ToString() == localId);
+            firstRender = false;
+            StateHasChanged();
+        }
+    }
+}

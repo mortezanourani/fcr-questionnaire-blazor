@@ -11,5 +11,5 @@ public class Response
     public Question Question { get; set; } = null!;
 
     public Guid OptionId { get; set; }
-    public LikertOption Option { get; set; } = null!;
+    public Option Option { get; set; } = null!;
 }

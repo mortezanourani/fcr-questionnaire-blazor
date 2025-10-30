@@ -1,0 +1,44 @@
+﻿@page "/Dashboard/Scales/Create"
+
+<PageTitle>اضافه کردن مقیاس</PageTitle>
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">مقیاس جدید</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="/Dashboard/Scales">بازگشت به فهرست مقیاس ها</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    <div class="row">
+        <div class="form-wrapper">
+            <EditForm method="post" Model="scale" OnValidSubmit="AddScale" FormName="create" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="form-row">
+                    <label for="title" class="form-label">عنوان مقیاس</label>
+                    <InputText id="title" @bind-Value="scale.Title" class="form-control" />
+                    <ValidationMessage For="() => scale.Title" class="text-danger" />
+                </div>
+                <div class="form-row">
+                    <button type="submit">ثبت</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Scale scale { get; set; } = new();
+
+    private async Task AddScale()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        context.Scales.Add(scale);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/Dashboard/Scales");
+    }
+}

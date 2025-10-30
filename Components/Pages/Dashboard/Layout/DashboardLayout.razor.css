@@ -1,5 +1,5 @@
 ::deep .container {
-    padding: 0;
+    padding: 0 16px;
     margin: 0 auto;
     max-width: 1120px;
 }
@@ -62,6 +62,8 @@
         position: sticky;
         top: 42px;
         border-bottom: 1px solid var(--primary-color);
+        background: var(--light-color);
+        z-index: 9998;
     }
 
         .main ::deep.page-header .container {
@@ -129,9 +131,13 @@
                 justify-content: right;
             }
 
+            ::deep .quickgrid thead tr th:last-child .col-title {
+                justify-content: left;
+            }
+
     ::deep .quickgrid tbody tr {
         background: var(--light-color);
-        background: #d6befa65;
+        background: #e9dff7;
     }
 
         ::deep .quickgrid tbody tr:nth-child(2n) {
@@ -164,9 +170,18 @@
                 gap: 16px;
             }
 
-        ::deep .quickgrid tbody tr:hover td:last-child {
+        ::deep .quickgrid tbody tr:hover td:last-child,
+        ::deep .quickgrid.show-all tbody tr td:last-child {
             opacity: 1;
         }
+
+::deep .row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
 
 ::deep .form-wrapper {
     width: 50%;
@@ -175,6 +190,13 @@
     border: 1px solid var(--secondary-color);
     background: var(--card-bg-color);
     border-radius: 6px;
+}
+
+@media (max-width: 800px) {
+    ::deep .form-wrapper {
+        width: 100%;
+        box-sizing: border-box;
+    }
 }
 
     ::deep .form-wrapper .form-row {

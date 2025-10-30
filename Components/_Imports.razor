@@ -12,4 +12,9 @@
 @using FCR.Models
 @using FCR.Data
 @using Microsoft.EntityFrameworkCore
-@inject IDbContextFactory<ApplicationDbContext> DbContextFactory;
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@using Blazored.LocalStorage
+@inject ILocalStorageService localStorage
+@inject NavigationManager NavigationManager
+@using FCR.Components.Pages.Shared
+@using Microsoft.AspNetCore.Components.QuickGrid

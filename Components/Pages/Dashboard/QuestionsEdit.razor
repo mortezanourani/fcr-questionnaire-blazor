@@ -1,12 +1,14 @@
 ﻿@page "/Dashboard/Questions/Edit/{Id:guid}"
 
+@rendermode InteractiveServer
+
 <PageTitle>ویرایش گویه</PageTitle>
 
 <header class="page-header">
     <div class="container">
         <h3 class="page-title">گویه ای از پرسشنامه @questionnaire?.Title</h3>
         <nav class="page-navbar">
-            <NavLink class="small-link" href="@($"/Dashboard/Questions/Delete/{Id}")">حذف این گویه</NavLink>
+            <NavLink class="small-link red-link" href="@($"/Dashboard/Questions/Delete/{Id}")">حذف این گویه</NavLink>
             <NavLink class="small-link" href="@($"/Dashboard/Questionnaires/{questionnaire?.Id}/Questions")">بازگشت به فهرست گویه ها</NavLink>
         </nav>
     </div>
@@ -41,9 +43,27 @@
                         <ValidationMessage For="() => question.Text" class="text-danger" />
                     </div>
                     <div class="form-row">
+                        <label for="scaleid" class="form-label">مقیاس نمره گزاری گویه</label>
+                        <InputSelect id="scaleid" @bind-Value="question.ScaleId" class="form-control">
+                            @foreach(Scale scale in scales!)
+                            {
+                                <option value="@scale.Id">@scale.Title</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="form-row">
                         <button type="submit">ثبت</button>
                     </div>
                 </EditForm>
+            </div>
+            <div class="form-wrapper">
+                <div class="form-row">
+                    <label class="form-label">گزینه های این گویه</label>
+                </div>
+                <QuickGrid Items="question.Scale!.Options!.OrderBy(o => o.Score).AsQueryable()" Class="show-all">
+                    <PropertyColumn Title="عبارت" Property="@(o => o.Label)" />
+                    <PropertyColumn IsDefaultSortColumn=true Title="نمره" Property="@(o => o.Score)" />
+                </QuickGrid>
             </div>
         </div>
     }
@@ -56,14 +76,26 @@
     [SupplyParameterFromForm]
     private Question? question { get; set; } = null!;
 
+    private ApplicationDbContext context = null!;
+
     private Questionnaire? questionnaire;
+
+    private List<Scale>? scales;
+
+    private Guid scaleId;
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = DbContextFactory.CreateDbContext();
+        context = DbContextFactory.CreateDbContext();
+
+        scales ??= await context.Scales
+            .OrderBy(o => o.Title)
+            .ToListAsync();
 
         question ??= await context.Questions
             .Include(q => q.Questionnaire)
+            .Include(q => q.Scale)
+                .ThenInclude(s => s.Options)
             .FirstOrDefaultAsync(q => q.Id == Id);
 
         if (question is null)
@@ -76,7 +108,6 @@
 
     private async Task UpdateQuestion()
     {
-        using var context = DbContextFactory.CreateDbContext();
         context.Attach(question!).State = EntityState.Modified;
 
         try

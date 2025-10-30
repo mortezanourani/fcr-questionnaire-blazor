@@ -1,10 +1,12 @@
 ﻿@page "/Dashboard/Questionnaires/{Id:guid}/Questions/Create"
 
+@rendermode InteractiveServer
+
 <PageTitle>اضافه کردن گویه</PageTitle>
 
 <header class="page-header">
     <div class="container">
-        <h3 class="page-title">ایجاد گویه جدید</h3>
+        <h3 class="page-title">گویه جدید</h3>
         <nav class="page-navbar">
             <NavLink class="small-link" href="@($"/Dashboard/Questionnaires/{Id}/Questions")">بازگشت به فهرست گویه ها</NavLink>
         </nav>
@@ -39,6 +41,15 @@
                         <ValidationMessage For="() => question.Text" class="text-danger" />
                     </div>
                     <div class="form-row">
+                        <label for="scaleid" class="form-label">مقیاس نمره گزاری گویه</label>
+                        <InputSelect id="scaleid" @bind-Value="question.ScaleId" class="form-control">
+                            @foreach (Scale scale in scales!)
+                            {
+                                <option value="@scale.Id">@scale.Title</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="form-row">
                         <button type="submit">ثبت</button>
                     </div>
                 </EditForm>
@@ -51,16 +62,29 @@
     [Parameter]
     public Guid Id { get; set; }
 
-    private Questionnaire? questionnaire;
-
     [SupplyParameterFromForm]
     private Question question { get; set; } = new();
+
+    private Questionnaire? questionnaire;
+
+    private List<Scale>? scales;
 
     protected override async Task OnInitializedAsync()
     {
         using var context = DbContextFactory.CreateDbContext();
         questionnaire ??= await context.Questionnaires
             .FirstOrDefaultAsync(q => q.Id == Id);
+
+        question.QuestionnaireId = questionnaire!.Id;
+
+        scales ??= await context.Scales
+            .Include(s => s.Options)
+            .OrderBy(s => s.Title)
+            .ToListAsync();
+
+        question.ScaleId = scales.FirstOrDefault()!.Id;
+
+        StateHasChanged();
     }
 
     private async Task AddQuestion()
@@ -68,6 +92,7 @@
         using var context = DbContextFactory.CreateDbContext();
         context.Questions.Add(question);
         await context.SaveChangesAsync();
+
         NavigationManager.NavigateTo($"/Dashboard/Questionnaires/{Id}/Questions");
     }
 }

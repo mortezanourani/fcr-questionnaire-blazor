@@ -8,6 +8,9 @@ public class Question
 
     public string Text { get; set; } = null!;
 
+    public Guid ScaleId { get; set; }
+    public Scale Scale { get; set; } = null!;
+
     public Guid QuestionnaireId { get; set; }
     public Questionnaire Questionnaire { get; set; } = null!;
 }

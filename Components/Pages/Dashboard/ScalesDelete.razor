@@ -1,0 +1,64 @@
+﻿@page "/Dashboard/Scales/Delete/{Id:guid}"
+
+<PageTitle>حذف مقیاس</PageTitle>
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">مقیاس @scale?.Title</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="@($"/Dashboard/Scales/Edit/{Id}")">ویرایش عنوان مقیاس</NavLink>
+            <NavLink class="small-link" href="/Dashboard/Scales">بازگشت به فهرست مقیاس ها</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    @if (scale is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <div class="row">
+            <div class="form-wrapper">
+                <div class="form-row">
+                    <label class="form-label">عنوان مقیاس</label>
+                    <p class="form-control">@scale.Title</p>
+                </div>
+                <EditForm method="post" Model="scale" OnValidSubmit="DeleteScale" FormName="delete" Enhance>
+                    <div class="form-row">
+                        <button type="submit" disabled="@(scale is null)">از حذف این پرسشنامه اطمینان دارم</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Scale? scale;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        scale ??= await context.Scales
+            .FirstOrDefaultAsync(q => q.Id == Id);
+
+        if (scale is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task DeleteScale()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        context.Scales.Remove(scale!);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/Dashboard/Scales");
+    }
+}

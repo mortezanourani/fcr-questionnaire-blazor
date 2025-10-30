@@ -1,19 +1,19 @@
-﻿@page "/Dashboard/LikertOptions/Delete/{Id:guid}"
+﻿@page "/Dashboard/Options/Delete/{Id:guid}"
 
 <PageTitle>حذف گزینه لیکرت</PageTitle>
 
 <header class="page-header">
     <div class="container">
-        <h3 class="page-title">گزینه @likertOption?.Label</h3>
+        <h3 class="page-title">گزینه @option?.Label</h3>
         <nav class="page-navbar">
-            <NavLink class="small-link" href="@($"/Dashboard/LikertOptions/Edit/{Id}")">ویرایش این گزینه</NavLink>
-            <NavLink class="small-link" href="/Dashboard/LikertOptions">بازگشت به فهرست گزینه های لیکرت</NavLink>
+            <NavLink class="small-link" href="@($"/Dashboard/Options/Edit/{Id}")">ویرایش این گزینه</NavLink>
+            <NavLink class="small-link" href="/Dashboard/Options">بازگشت به فهرست گزینه ها</NavLink>
         </nav>
     </div>
 </header>
 
 <div class="content container">
-    @if (likertOption is null)
+    @if (option is null)
     {
         <h4>در حال بارگزاری...</h4>
     }
@@ -22,16 +22,16 @@
         <div class="row">
             <div class="form-wrapper">
                 <div class="form-row">
-                    <label class="form-label">متن گزینه</label>
-                    <p class="form-control">@likertOption.Label</p>
+                    <label class="form-label">عبارت گزینه</label>
+                    <p class="form-control">@option.Label</p>
                 </div>
                 <div class="form-row">
                     <label class="form-label">نمره گزینه</label>
-                    <p class="form-control">@likertOption.Score</p>
+                    <p class="form-control">@option.Score</p>
                 </div>
-                <EditForm method="post" Model="likertOption" OnValidSubmit="DeleteOption" FormName="delete" Enhance>
+                <EditForm method="post" Model="option" OnValidSubmit="DeleteOption" FormName="delete" Enhance>
                     <div class="form-row">
-                        <button type="submit" disabled="@(likertOption is null)">از حذف این گزینه اطمینان دارم</button>
+                        <button type="submit" disabled="@(option is null)">از حذف این گزینه اطمینان دارم</button>
                     </div>
                 </EditForm>
             </div>
@@ -43,16 +43,16 @@
     [Parameter]
     public Guid Id { get; set; }
 
-    private LikertOption? likertOption;
+    private Option? option;
 
     protected override async Task OnInitializedAsync()
     {
         using var context = DbContextFactory.CreateDbContext();
 
-        likertOption ??= await context.LikertOptions
+        option ??= await context.Options
             .FirstOrDefaultAsync(q => q.Id == Id);
 
-        if (likertOption is null)
+        if (option is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
@@ -61,8 +61,8 @@
     private async Task DeleteOption()
     {
         using var context = DbContextFactory.CreateDbContext();
-        context.LikertOptions.Remove(likertOption!);
+        context.Options.Remove(option!);
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/Dashboard/LikertOptions");
+        NavigationManager.NavigateTo($"/Dashboard/Scales/{option!.ScaleId}/Options");
     }
 }

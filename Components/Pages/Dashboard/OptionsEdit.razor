@@ -1,0 +1,95 @@
+﻿@page "/Dashboard/Options/Edit/{Id:guid}"
+
+@rendermode InteractiveServer
+
+<PageTitle>ویرایش گزینه</PageTitle>
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">گزینه @option?.Label</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link red-link" href="@($"/Dashboard/Options/Delete/{Id}")">حذف این گزینه</NavLink>
+            <NavLink class="small-link" href="@($"/Dashboard/Scales/{scale?.Id}/Options")">بازگشت به فهرست گزینه ها</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    @if (option is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <div class="row">
+            <div class="form-wrapper">
+                <div class="form-row">
+                    <label class="form-label">عنوان مقیاس</label>
+                    <p class="form-control">@scale?.Title</p>
+                </div>
+                <EditForm method="post" Model="option" OnValidSubmit="UpdateOption" FormName="edit" Enhance>
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger" role="alert" />
+                    <input type="hidden" name="option.ScaleId" value="@option.ScaleId" hidden />
+                    <input type="hidden" name="option.Id" value="@option.Id" hidden />
+                    <div class="form-row">
+                        <label for="label" class="form-label">عبارت گزینه</label>
+                        <InputText id="label" @bind-Value="option.Label" class="form-control" />
+                        <ValidationMessage For="() => option.Label" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <label for="score" class="form-label">نمره گزینه</label>
+                        <InputNumber id="score" @bind-Value="option.Score" class="form-control" />
+                        <ValidationMessage For="() => option.Score" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <button type="submit">ثبت</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Option? option { get; set; } = null!;
+
+    private Scale? scale { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        option ??= await context.Options
+            .Include(o => o.Scale)
+            .FirstOrDefaultAsync(q => q.Id == Id);
+
+        if (option is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+
+        scale = option!.Scale;
+    }
+
+    private async Task UpdateOption()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        context.Attach(option!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw;
+        }
+
+        NavigationManager.NavigateTo($"/Dashboard/Scales/{option!.ScaleId}/Options");
+    }
+}

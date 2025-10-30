@@ -1,0 +1,72 @@
+﻿@page "/Dashboard/Scales/{Id:guid}/Options/Create"
+
+<PageTitle>اضافه کردن گزینه</PageTitle>
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">گزینه جدید</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="@($"/Dashboard/Scale/{Id}/Options")">بازگشت به فهرست گزینه ها</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    <div class="row">
+        @if (scale is null)
+        {
+            <Loading />
+        }
+        else
+        {
+            <div class="form-wrapper">
+                <div class="form-row">
+                    <label for="label" class="form-label">عنوان مقیاس</label>
+                    <p class="form-control">@scale.Title</p>
+                </div>
+                <EditForm method="post" Model="option" OnValidSubmit="AddOption" FormName="create" Enhance>
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger" role="alert" />
+                    <input type="hidden" name="option.ScaleId" value="@Id" />
+                    <div class="form-row">
+                        <label for="label" class="form-label">عبارت گزینه</label>
+                        <InputText id="label" @bind-Value="option.Label" class="form-control" />
+                        <ValidationMessage For="() => option.Label" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <label for="score" class="form-label">نمره گزینه</label>
+                        <InputNumber id="score" @bind-Value="option.Score" class="form-control" />
+                        <ValidationMessage For="() => option.Score" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <button type="submit">ثبت</button>
+                    </div>
+                </EditForm>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Option option { get; set; } = new();
+
+    private Scale? scale;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        scale ??= await context.Scales
+            .FirstOrDefaultAsync(s => s.Id == Id);
+    }
+    private async Task AddOption()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        context.Options.Add(option);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo($"/Dashboard/Scales/{Id}/Options");
+    }
+}

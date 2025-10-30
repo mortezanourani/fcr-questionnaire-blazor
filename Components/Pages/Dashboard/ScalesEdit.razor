@@ -1,0 +1,78 @@
+﻿@page "/Dashboard/Scales/Edit/{Id:guid}"
+
+<PageTitle>ویرایش مقیاس</PageTitle>
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">مقیاس @scale?.Title</h3>
+        <nav class="page-navbar">
+            <NavLink class="small-link" href="@($"/Dashboard/Scales/{Id}/Options")">گزینه ها</NavLink>
+            <NavLink class="small-link" href="/Dashboard/Scales">بازگشت به فهرست مقیاس ها</NavLink>
+        </nav>
+    </div>
+</header>
+
+<div class="content container">
+    @if (scale is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <div class="row">
+            <div class="form-wrapper">
+                <EditForm method="post" Model="scale" OnValidSubmit="UpdateScale" FormName="edit" Enhance>
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger" role="alert" />
+                    <input type="hidden" name="scale.Id" value="@scale.Id" hidden />
+                    <div class="form-row">
+                        <label for="title" class="form-label">عنوان مقیاس</label>
+                        <InputText id="title" @bind-Value="scale.Title" class="form-control" />
+                        <ValidationMessage For="() => scale.Title" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <button type="submit">ثبت</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Scale? scale { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        scale ??= await context.Scales
+            .FirstOrDefaultAsync(q => q.Id == Id);
+
+        if (scale is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task UpdateScale()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        context.Attach(scale!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw;
+        }
+
+        NavigationManager.NavigateTo("/Dashboard/Scales");
+    }
+}

@@ -1,4 +1,5 @@
-﻿using FCR.Components;
+﻿using Blazored.LocalStorage;
+using FCR.Components;
 using FCR.Components.Account;
 using FCR.Data;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -34,6 +35,8 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
+
+builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 

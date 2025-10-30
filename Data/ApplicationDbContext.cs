@@ -10,7 +10,9 @@ namespace FCR.Data
 
         public DbSet<Question> Questions { get; set; }
 
-        public DbSet<LikertOption> LikertOptions { get; set; }
+        public DbSet<Scale> Scales { get; set; }
+
+        public DbSet<Option> Options { get; set; }
      
         public DbSet<Participant> Participants { get; set; }
 
