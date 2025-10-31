@@ -1,0 +1,116 @@
+﻿body * {
+    position: relative;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+}
+
+.container {
+    max-width: 1120px;
+    padding: 16px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+    .container .content {
+        margin: auto;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid var(--primary-color);
+        background: var(--card-bg-color);
+        min-height: calc(100vh - 32px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .container .content .row {
+        margin-top: -5%;
+    }
+
+.title {
+    width: 75%;
+    margin: 0 auto 8px;
+    font-weight: 600;
+    font-size: 32px;
+    color: var(--primary-color);
+}
+
+.description {
+    width: 65%;
+    margin: 0 auto 12px;
+    font-weight: 300;
+    font-size: 18px;
+    color: var(--secondary-color);
+}
+
+::deep .form-wrapper {
+    width: 65%;
+    margin: 0 auto;
+    padding: 12px;
+    border: 1px solid var(--secondary-color);
+    background: #e9dff7;
+    border-radius: 6px;
+}
+
+@media (max-width: 800px) {
+    .title,
+    .description,
+    ::deep .form-wrapper {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+::deep .form-wrapper .form-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    gap: 4px;
+}
+
+    ::deep .form-wrapper .form-row:last-child {
+        margin-bottom: 0px;
+    }
+
+    ::deep .form-wrapper .form-row > * {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    ::deep .form-wrapper .form-row .form-label {
+        font-size: 13px;
+        font-weight: 400;
+        text-align: right;
+    }
+
+    ::deep .form-wrapper .form-row .form-control {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 400;
+        padding: 4px 8px;
+        border-radius: 4px;
+        outline: none;
+        border: 1px solid gray;
+        background: var(--light-color);
+        direction: ltr;
+    }
+
+    ::deep .form-wrapper .form-row textarea {
+        min-height: 120px;
+        resize: none;
+    }
+
+    ::deep .form-wrapper .form-row button {
+        font-size: 14px;
+        font-weight: 500;
+        padding: 6px 12px;
+        width: 50%;
+        margin-right: auto;
+    }
