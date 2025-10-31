@@ -60,7 +60,7 @@
                 <div class="form-row">
                     <label class="form-label">گزینه های این گویه</label>
                 </div>
-                <QuickGrid Items="question.Scale!.Options!.OrderBy(o => o.Score).AsQueryable()" Class="show-all">
+                <QuickGrid Items="options!.AsQueryable()" Class="show-all">
                     <PropertyColumn Title="عبارت" Property="@(o => o.Label)" />
                     <PropertyColumn IsDefaultSortColumn=true Title="نمره" Property="@(o => o.Score)" />
                 </QuickGrid>
@@ -81,8 +81,7 @@
     private Questionnaire? questionnaire;
 
     private List<Scale>? scales;
-
-    private Guid scaleId;
+    private List<Option>? options;
 
     protected override async Task OnInitializedAsync()
     {
@@ -94,16 +93,17 @@
 
         question ??= await context.Questions
             .Include(q => q.Questionnaire)
-            .Include(q => q.Scale)
-                .ThenInclude(s => s.Options)
             .FirstOrDefaultAsync(q => q.Id == Id);
 
         if (question is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
-
         questionnaire = question!.Questionnaire;
+        options ??= await context.Options
+            .Where(o => o.ScaleId == question!.ScaleId)
+            .OrderBy(o => o.Score)
+            .ToListAsync();
     }
 
     private async Task UpdateQuestion()
