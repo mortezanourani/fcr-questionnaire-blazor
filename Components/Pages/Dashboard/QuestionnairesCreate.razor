@@ -28,6 +28,11 @@
                     <ValidationMessage For="() => questionnaire.Description" class="text-danger" />
                 </div>
                 <div class="form-row">
+                    <label for="priority" class="form-label">اولویت پرسشنامه</label>
+                    <InputNumber id="priority" @bind-Value="questionnaire.Priority" class="form-control" />
+                    <ValidationMessage For="() => questionnaire.Priority" class="text-danger" />
+                </div>
+                <div class="form-row">
                     <button type="submit">ثبت</button>
                 </div>
             </EditForm>

@@ -156,6 +156,10 @@
             font-weight: 400;
         }
 
+            ::deep .quickgrid tbody tr td.nowrap {
+                text-wrap: nowrap;
+            }
+
             ::deep .quickgrid tbody tr td.text-right,
             ::deep .quickgrid tbody tr td:first-child {
                 text-align: right;

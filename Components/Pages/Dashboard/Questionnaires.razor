@@ -12,7 +12,7 @@
 <div class="content container">
     @if (questionnaires is null)
     {
-        <h4>در حال بازگزاری لیست</h4>
+        <Loading />
     }
     else
     {
@@ -23,7 +23,8 @@
         else
         {
             <QuickGrid Items="questionnaires.AsQueryable()">
-                <PropertyColumn IsDefaultSortColumn=true Title="عنوان پرسشنامه" Property="@(questionnaire => questionnaire.Title)" />
+                <PropertyColumn IsDefaultSortColumn=true Title="ردیف" Property="@(questionnaire => questionnaire.Priority)" />
+                <PropertyColumn Class="nowrap text-right" IsDefaultSortColumn=true Title="عنوان پرسشنامه" Property="@(questionnaire => questionnaire.Title)" />
                 <PropertyColumn Class="text-right" Title="توضیحات پرسشنامه" Property="@(questionnaire => questionnaire.Description)" />
                 <PropertyColumn Title="تعداد گویه" Property="@(questionnaire => questionnaire.Questions!.Count)" />
                 <TemplateColumn Title="">

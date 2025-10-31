@@ -15,7 +15,7 @@
 <div class="content container">
     @if (questionnaire is null)
     {
-        <h4>در حال بازگزاری لیست</h4>
+        <Loading />
     }
     else
     {
@@ -34,6 +34,11 @@
                         <label for="description" class="form-label">توضیح پرسشنامه</label>
                         <InputTextArea id="description" @bind-Value="questionnaire.Description" class="form-control" />
                         <ValidationMessage For="() => questionnaire.Description" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <label for="priority" class="form-label">اولویت پرسشنامه</label>
+                        <InputNumber id="priority" @bind-Value="questionnaire.Priority" class="form-control" />
+                        <ValidationMessage For="() => questionnaire.Priority" class="text-danger" />
                     </div>
                     <div class="form-row">
                         <button type="submit">ثبت</button>

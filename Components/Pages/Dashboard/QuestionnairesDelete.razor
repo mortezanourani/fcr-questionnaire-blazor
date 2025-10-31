@@ -15,7 +15,7 @@
 <div class="content container">
     @if (questionnaire is null)
     {
-        <h4>در حال بازگزاری لیست</h4>
+        <Loading />
     }
     else
     {
@@ -28,6 +28,10 @@
                 <div class="form-row">
                     <label for="description" class="form-label">توضیح پرسشنامه</label>
                     <p class="form-control">@questionnaire.Description</p>
+                </div>
+                <div class="form-row">
+                    <label for="priority" class="form-label">اولویت پرسشنامه</label>
+                    <p class="form-control">@questionnaire.Priority</p>
                 </div>
                 <EditForm method="post" Model="questionnaire" OnValidSubmit="DeleteQuestionnaire" FormName="delete" Enhance>
                     <div class="form-row">
