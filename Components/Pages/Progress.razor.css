@@ -8,17 +8,126 @@ button {
 }
 
 .container {
+    width: 100%;
     max-width: 1120px;
     padding: 16px;
     margin: 0 auto;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 16px;
 }
 
     .container .content {
+        width: 100%;
+        padding: 0;
         margin: auto;
-        padding: 16px;
-        border-radius: 8px;
-        border: 1px solid var(--primary-color);
-        background: var(--card-bg-color);
-        min-height: calc(100vh - 32px);
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: stretch;
+        align-items: stretch;
+        gap: 16px;
     }
+
+.question-card {
+    flex: 1;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--primary-color);
+    background: var(--card-bg-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+.question-card .question {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: first baseline;
+    gap: 12px;
+}
+
+.question-card .question > * {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    text-align: justify;
+}
+
+    .question-card .question-options {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+        .question-card .question-options .question-options-item {
+            text-align: right;
+        }
+
+.paginator nav {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+}
+
+    .paginator nav button {
+        width: auto;
+    }
+
+        .paginator nav button:disabled {
+            color: lightgray;
+            background-color: var(--secondary-color);
+            border-color: var(--light-color);
+        }
+
+/*
+::deep table.quickgrid {
+    --col-gap: 0;
+    height: 100%;
+    width: 100%;
+    flex: 1;
+}
+
+    ::deep table.quickgrid thead {
+        display: none;
+    }
+
+    ::deep table.quickgrid > tbody > tr > td {
+        padding: 0;
+    }
+
+    ::deep .question-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: stretch;
+    }
+
+    ::deep table.quickgrid span {
+        margin-bottom: auto;
+    }
+
+.paginator {
+}
+
+    .paginator nav {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        align-items: center;
+        gap: 32px;
+    }
+
+        .paginator nav button {
+            width: auto;
+        }
+*/
