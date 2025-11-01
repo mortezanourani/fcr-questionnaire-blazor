@@ -18,6 +18,7 @@ button {
     justify-content: space-between;
     align-items: stretch;
     gap: 16px;
+    background: var(--card-bg-color);
 }
 
     .container .content {
@@ -36,8 +37,8 @@ button {
     flex: 1;
     padding: 16px;
     border-radius: 8px;
-    border: 1px solid var(--primary-color);
-    background: var(--card-bg-color);
+    background: var(--light-color);
+    box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 1px 2px 4px 0 rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -52,12 +53,17 @@ button {
     gap: 12px;
 }
 
-.question-card .question > * {
+.question-card .question * {
     margin: 0;
     padding: 0;
     font-size: 14px;
     text-align: justify;
 }
+
+    .question-card .question .question-clarification {
+        margin-top: 16px;
+        color: gray;
+    }
 
     .question-card .question-options {
         display: flex;
@@ -86,7 +92,7 @@ button {
         .paginator nav button:disabled {
             color: lightgray;
             background-color: var(--secondary-color);
-            border-color: var(--light-color);
+            border-color: var(--secondary-color);
         }
 
 /*

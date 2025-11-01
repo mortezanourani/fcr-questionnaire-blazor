@@ -8,6 +8,8 @@ public class Question
 
     public string Text { get; set; } = null!;
 
+    public string? Clarification { get; set; }
+
     public Guid ScaleId { get; set; }
     public Scale Scale { get; set; } = null!;
 

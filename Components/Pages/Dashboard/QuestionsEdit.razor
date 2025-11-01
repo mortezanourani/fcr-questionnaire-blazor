@@ -43,6 +43,11 @@
                         <ValidationMessage For="() => question.Text" class="text-danger" />
                     </div>
                     <div class="form-row">
+                        <label for="clarification" class="form-label">توضیح لازم برای شفافسازی گویه</label>
+                        <InputText id="clarification" @bind-Value="question.Clarification" class="form-control" />
+                        <ValidationMessage For="() => question.Clarification" class="text-danger" />
+                    </div>
+                    <div class="form-row">
                         <label for="scaleid" class="form-label">مقیاس نمره گزاری گویه</label>
                         <InputSelect id="scaleid" @bind-Value="question.ScaleId" class="form-control">
                             @foreach(Scale scale in scales!)

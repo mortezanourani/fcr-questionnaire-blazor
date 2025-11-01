@@ -26,6 +26,7 @@
             <QuickGrid Items="questions.AsQueryable()">
                 <PropertyColumn IsDefaultSortColumn=true Title="ردیف" Property="@(question => question.Position)" />
                 <PropertyColumn Class="text-right" Title="متن گویه" Property="@(question => question.Text)" />
+                <PropertyColumn Class="text-right" Title="توضیح لازم" Property="@(question => question.Clarification)" />
                 <TemplateColumn Title="">
                     <NavLink class="small-link" href="@($"/Dashboard/Questions/Edit/{context.Id}")">ویرایش</NavLink>
                     <NavLink class="small-link red-link" href="@($"/Dashboard/Questions/Delete/{context.Id}")">حذف</NavLink>

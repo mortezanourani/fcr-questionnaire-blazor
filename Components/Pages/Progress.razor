@@ -10,7 +10,7 @@
     else
     {
         <div class="content">
-            @questionnaire.Title
+            @questionnaire?.Title
             @if (question is null)
             {
                 <Loading />
@@ -20,7 +20,10 @@
                 <div class="question-card">
                     <div class="question">
                         <h4 class="question-number">@question.Position</h4>
-                        <p class="question-text">@question.Text</p>
+                        <span>
+                            <p class="question-text">@question.Text</p>
+                            <p class="question-clarification">@question.Clarification</p>
+                        </span>
                     </div>
                     <div class="question-options">
                         @foreach (Option option in question.Scale!.Options.OrderBy(o => o.Score))
@@ -57,65 +60,7 @@
                     </nav>
                 </div>
             }
-            @*
-            <QuickGrid Items="Questionnaires.AsQueryable()" TGridItem="Questionnaire" Pagination="questionnairePagination">
-                <TemplateColumn TGridItem="Questionnaire">
-                    <ChildContent Context="questionnaire">
-                        @if (questionnaire.Questions is null)
-                        {
-                            <Loading />
-                        }
-                        else
-                        {
-                            <QuickGrid Items="@questionnaire.Questions.AsQueryable()" TGridItem="Question" Pagination="questionPagination">
-                                <TemplateColumn TGridItem="Question">
-                                    <ChildContent Context="question">
-                                        <div class="question-card">
-                                            <span>
-                                                <h4 class="question-number">@question.Position از @questionnaire.Questions.Count</h4>
-                                                <p class="question-text">@question.Text</p>
-                                            </span>
-                                            <div class="question-options">
-                                                @foreach (Option option in question.Scale!.Options.OrderBy(o => o.Score))
-                                                {
-                                                    var currentPage = questionPagination.CurrentPageIndex;
-                                                    var lastPage = questionPagination.LastPageIndex;
-                                                    <button @onclick="@(() => NextQuestion(currentPage))"
-                                                            class="question-options-item">
-                                                        @option.Label
-                                                    </button>
-                                                }
-                                            </div>
-                                        </div>
-                                    </ChildContent>
-                                </TemplateColumn>
-                            </QuickGrid>
-                        }
-                    </ChildContent>
-                </TemplateColumn>
-            </QuickGrid>
-            *@
         </div>
-        @*
-        <div class="paginator">
-            <nav role="navigation">
-                @if (questionPagination.TotalItemCount.HasValue)
-                {
-                    var currentPage = questionPagination.CurrentPageIndex;
-                    var lastPage = questionPagination.LastPageIndex;
-                    <button @onclick="@(() => NextQuestion(currentPage))"
-                            disabled=@((currentPage >= lastPage) ? "disabled" : false)>
-                        سوال بعد
-                    </button>
-                    <button @onclick="@(() => PreviousQuestion(currentPage))"
-                            disabled=@((currentPage <= 0) ? "disabled" : false)>
-                        سوال قبل
-                    </button>
-                }
-            </nav>
-        </div>
-        *@
-
     }
 </main>
 

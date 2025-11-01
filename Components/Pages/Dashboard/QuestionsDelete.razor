@@ -29,6 +29,10 @@
                     <label class="form-label">متن گویه</label>
                     <p class="form-control">@question.Text</p>
                 </div>
+                <div class="form-row">
+                    <label class="form-label">توضیح لازم برای شفافسازی گویه</label>
+                    <p class="form-control">@question.Clarification</p>
+                </div>
                 <EditForm method="post" Model="question" OnValidSubmit="DeleteQuestion" FormName="delete" Enhance>
                     <div class="form-row">
                         <button type="submit" disabled="@(question is null)">از حذف این گویه اطمینان دارم</button>
