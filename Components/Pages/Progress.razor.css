@@ -9,7 +9,6 @@ button {
 
 .container {
     width: 100%;
-    max-width: 1120px;
     padding: 16px;
     margin: 0 auto;
     min-height: 100vh;
@@ -18,11 +17,12 @@ button {
     justify-content: space-between;
     align-items: stretch;
     gap: 16px;
-    background: var(--card-bg-color);
+    background-color: var(--card-bg-color);
 }
 
     .container .content {
         width: 100%;
+        max-width: 1120px;
         padding: 0;
         margin: auto;
         flex-grow: 1;

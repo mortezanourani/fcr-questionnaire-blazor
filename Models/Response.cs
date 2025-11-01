@@ -10,6 +10,5 @@ public class Response
     public Guid QuestionId { get; set; }
     public Question Question { get; set; } = null!;
 
-    public Guid OptionId { get; set; }
-    public Option Option { get; set; } = null!;
+    public string Value { get; set; } = null!;
 }

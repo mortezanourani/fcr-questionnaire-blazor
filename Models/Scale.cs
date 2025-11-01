@@ -6,5 +6,14 @@ public class Scale
 
     public string Title { get; set; } = null!;
 
-    public ICollection<Option> Options { get; set; } = null!;
+    public ScaleType Type { get; set; } = 0;
+
+    public ICollection<Option>? Options { get; set; }
+}
+
+public enum ScaleType
+{
+    Options = 0,
+    Number = 1,
+    Text = 2
 }

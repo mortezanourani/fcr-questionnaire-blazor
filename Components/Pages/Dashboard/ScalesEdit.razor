@@ -1,5 +1,6 @@
 ﻿@page "/Dashboard/Scales/Edit/{Id:guid}"
 
+
 <PageTitle>ویرایش مقیاس</PageTitle>
 
 <header class="page-header">
@@ -28,6 +29,16 @@
                     <div class="form-row">
                         <label for="title" class="form-label">عنوان مقیاس</label>
                         <InputText id="title" @bind-Value="scale.Title" class="form-control" />
+                        <ValidationMessage For="() => scale.Title" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <label for="type" class="form-label">نوع مقیاس</label>
+                        <InputSelect id="type" @bind-Value="scale.Type" class="form-control">
+                            @foreach (ScaleType type in Enum.GetValues(typeof(ScaleType)))
+                            {
+                                <option value="@(type)">@type.ToString()</option>
+                            }
+                        </InputSelect>
                         <ValidationMessage For="() => scale.Title" class="text-danger" />
                     </div>
                     <div class="form-row">

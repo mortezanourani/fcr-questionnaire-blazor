@@ -26,12 +26,26 @@
                         </span>
                     </div>
                     <div class="question-options">
-                        @foreach (Option option in question.Scale!.Options.OrderBy(o => o.Score))
+                        @if (question.Scale.Type.ToString() == "Options")
                         {
-                            <button @onclick="NextQuestion"
-                                    class="question-options-item">
-                                @option.Label
-                            </button>
+                            <InputRadioGroup @bind-Value="tempOption">
+                                @foreach (Option option in question.Scale!.Options!.OrderBy(o => o.Score))
+                                {
+                                    <button @onclick="NextQuestion"
+                                            class="question-options-item">
+                                        <InputRadio Value="option.Score" />
+                                        @option.Label
+                                    </button>
+                                }
+                            </InputRadioGroup>
+                        }
+                        else if (question.Scale.Type.ToString() == "Number")
+                        {
+                            <InputNumber class="question-options" @bind-Value="tempNumber" TValue="Int32" />
+                        }
+                        else if (question.Scale.Type.ToString() == "Text")
+                        {
+                            <InputText class="question-options" @bind-Value="tempText" />
                         }
                     </div>
 
@@ -72,6 +86,10 @@
 
     private List<Question>? Questions;
     private Question? question;
+
+    private int tempOption;
+    private int tempNumber;
+    private string tempText = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -118,7 +136,7 @@
             var currentQuestionnaire = questionnaire!.Priority;
             questionnaire = Questionnaires!
                 .FirstOrDefault(q => q.Priority == currentQuestionnaire + 1);
-            
+
             if (questionnaire is not null)
             {
                 using var context = DbContextFactory.CreateDbContext();
@@ -131,6 +149,7 @@
                 question = Questions.FirstOrDefault();
             }
         }
+        StateHasChanged();
     }
 
     private async Task PreviousQuestion()

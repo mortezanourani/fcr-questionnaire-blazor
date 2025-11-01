@@ -25,6 +25,10 @@
                     <label class="form-label">عنوان مقیاس</label>
                     <p class="form-control">@scale.Title</p>
                 </div>
+                <div class="form-row">
+                    <label class="form-label">نوع مقیاس</label>
+                    <p class="form-control">@scale.Type</p>
+                </div>
                 <EditForm method="post" Model="scale" OnValidSubmit="DeleteScale" FormName="delete" Enhance>
                     <div class="form-row">
                         <button type="submit" disabled="@(scale is null)">از حذف این پرسشنامه اطمینان دارم</button>

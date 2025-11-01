@@ -26,6 +26,7 @@
             <QuickGrid Items="questions.AsQueryable()">
                 <PropertyColumn IsDefaultSortColumn=true Title="ردیف" Property="@(question => question.Position)" />
                 <PropertyColumn Class="text-right" Title="متن گویه" Property="@(question => question.Text)" />
+                <PropertyColumn Title="نوع پاسخ" Property="@(question => question.Scale.Type)" />
                 <PropertyColumn Class="text-right" Title="توضیح لازم" Property="@(question => question.Clarification)" />
                 <TemplateColumn Title="">
                     <NavLink class="small-link" href="@($"/Dashboard/Questions/Edit/{context.Id}")">ویرایش</NavLink>
@@ -50,6 +51,7 @@
 
         questionnaire ??= await context.Questionnaires
             .Include(q => q.Questions)
+                .ThenInclude(q => q.Scale)
             .FirstOrDefaultAsync(q => q.Id == Id);
 
         if (questionnaire is null)

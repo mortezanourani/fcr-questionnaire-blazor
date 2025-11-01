@@ -24,10 +24,14 @@
         {
             <QuickGrid Items="scales.AsQueryable()">
                 <PropertyColumn IsDefaultSortColumn=true Title="عنوان مقیاس" Property="@(scale => scale.Title)" />
+                <PropertyColumn Title="نوع پاسخ" Property="@(scale => scale.Type.ToString())" />
                 <PropertyColumn Title="تعداد گزینه" Property="@(scale => scale.Options!.Count)" />
                 <TemplateColumn Title="">
+                    @if (context.Type.ToString() == "Options")
+                    {
+                        <NavLink class="small-link" href="@($"/Dashboard/Scales/{context.Id}/Options")">گزینه ها</NavLink>
+                    }
                     <NavLink class="small-link" href="@($"/Dashboard/Scales/Edit/{context.Id}")">ویرایش</NavLink>
-                    <NavLink class="small-link" href="@($"/Dashboard/Scales/{context.Id}/Options")">گزینه ها</NavLink>
                     <NavLink class="small-link red-link" href="@($"/Dashboard/Scales/Delete/{context.Id}")">حذف</NavLink>
                 </TemplateColumn>
             </QuickGrid>

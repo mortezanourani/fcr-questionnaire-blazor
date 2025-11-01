@@ -23,6 +23,16 @@
                     <ValidationMessage For="() => scale.Title" class="text-danger" />
                 </div>
                 <div class="form-row">
+                    <label for="type" class="form-label">نوع مقیاس</label>
+                    <InputSelect id="type" @bind-Value="scale.Type" class="form-control">
+                        @foreach(ScaleType type in Enum.GetValues(typeof(ScaleType)))
+                        {
+                            <option value="@((int)type)">@type.ToString()</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => scale.Title" class="text-danger" />
+                </div>
+                <div class="form-row">
                     <button type="submit">ثبت</button>
                 </div>
             </EditForm>
