@@ -28,24 +28,23 @@
                     <div class="question-options">
                         @if (question.Scale.Type.ToString() == "Options")
                         {
-                            <InputRadioGroup @bind-Value="tempOption">
+                            <InputRadioGroup @bind-Value="tempInt" @bind-Value:after="Answer">
                                 @foreach (Option option in question.Scale!.Options!.OrderBy(o => o.Score))
                                 {
-                                    <button @onclick="NextQuestion"
-                                            class="question-options-item">
-                                        <InputRadio Value="option.Score" />
+                                    <InputRadio id="@option.Id" Value="option.Score" />
+                                    <label for="@option.Id" class="question-options-item">
                                         @option.Label
-                                    </button>
+                                    </label>
                                 }
                             </InputRadioGroup>
                         }
                         else if (question.Scale.Type.ToString() == "Number")
                         {
-                            <InputNumber class="question-options" @bind-Value="tempNumber" TValue="Int32" />
+                            <InputNumber class="question-options" @bind-Value="tempInt" TValue="Int32" @bind-Value:after="Answer" />
                         }
                         else if (question.Scale.Type.ToString() == "Text")
                         {
-                            <InputText class="question-options" @bind-Value="tempText" />
+                            <InputText class="question-options" @bind-Value="tempValue" @bind-Value:after="Answer" />
                         }
                     </div>
 
@@ -55,7 +54,7 @@
                         @if (Questions!.Count > 1)
                         {
                             var nextDisable =
-                                questionnaire.Priority >= Questionnaires!.Count
+                                questionnaire!.Priority >= Questionnaires!.Count
                                 &&
                                 question.Position >= Questions.Count;
                             <button @onclick="NextQuestion"
@@ -87,9 +86,10 @@
     private List<Question>? Questions;
     private Question? question;
 
-    private int tempOption;
-    private int tempNumber;
-    private string tempText = null!;
+    private int tempInt;
+    private string tempValue = null!;
+
+    private Response? Response;
 
     protected override async Task OnInitializedAsync()
     {
@@ -120,6 +120,8 @@
             participant ??= await context.Participants
                 .FirstOrDefaultAsync(p => p.Id.ToString() == localId);
             firstRender = false;
+
+            await CurrentAnswer();
             StateHasChanged();
         }
     }
@@ -149,6 +151,8 @@
                 question = Questions.FirstOrDefault();
             }
         }
+
+        await CurrentAnswer();
         StateHasChanged();
     }
 
@@ -177,5 +181,87 @@
                 question = Questions.LastOrDefault();
             }
         }
+
+        await CurrentAnswer();
+        StateHasChanged();
+    }
+
+    private async Task CurrentAnswer()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        Response = await context.Responses
+            .FirstOrDefaultAsync(r =>
+                r.ParticipantId == participant!.Id
+                &&
+                r.QuestionId == question!.Id
+            );
+
+        if (Response is not null)
+        {
+            if (question!.Scale.Type == ScaleType.Text)
+            {
+                tempValue = Response.Value;
+            }
+            else
+            {
+                tempInt = int.Parse(Response.Value);
+            }
+        }
+        else
+        {
+            tempInt = -1;
+            tempValue = null!;
+        }
+    }
+
+    private async Task Answer()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        Response = await context.Responses
+            .FirstOrDefaultAsync(r =>
+                r.ParticipantId == participant!.Id
+                &&
+                r.QuestionId == question!.Id
+            );
+
+        if (Response is null)
+        {
+            Response = new Response
+            {
+                ParticipantId = participant!.Id,
+                QuestionId = question!.Id,
+            };
+            Response.Value = tempValue;
+            if (question!.Scale.Type != ScaleType.Text)
+            {
+                Response.Value = tempInt.ToString();
+            }
+            context.Responses.Add(Response);
+        }
+        else
+        {
+            Response.Value = tempValue;
+            if (question!.Scale.Type != ScaleType.Text)
+            {
+                Response.Value = tempInt.ToString();
+            }
+            context.Attach(Response!).State = EntityState.Modified;
+        }
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (Exception except)
+        {
+            NavigationManager.NavigateTo(except.InnerException!.Message);
+        }
+        finally
+        {
+            tempInt = -1;
+            tempValue = null!;
+        }
+
+        await NextQuestion();
     }
 }

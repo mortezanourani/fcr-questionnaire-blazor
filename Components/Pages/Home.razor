@@ -11,12 +11,41 @@
         <p>
             پرسشنامه آنلاین پژوهش سنجش ترس از بازگشت سرطان در مراقبین خانوادگی بیماران سرطانی
         </p>
-        <button @onclick="StartProgress">شروع پاسخگویی</button>
+        @if (InProgress)
+        {
+            <p>
+                یک پرسشنامه در دستگاه شما در حال پاسخگویی است. آیا مایل به تکمیل همان پرسشنامه هستید؟
+            </p>
+            <button @onclick="ContinueProgress">بله، همان پرسشنامه را ادامه می دهم.</button>
+            <p></p>
+            <button @onclick="StartProgress">خیر، پرسشنامه جدیدی می خواهم.</button>
+        }
+        else
+        {
+            <button @onclick="StartProgress">شروع پاسخگویی</button>
+        }
     </div>
 </main>
 
 @code {
-    protected async Task StartProgress()
+    private bool InProgress = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            using var context = DbContextFactory.CreateDbContext();
+            var localId = await localStorage.GetItemAsync<string>("participantId");
+            if (localId is not null)
+            {
+                InProgress = true;
+            }
+            firstRender = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task StartProgress()
     {
         using var context = DbContextFactory.CreateDbContext();
 
@@ -35,5 +64,10 @@
         {
 
         }
+    }
+
+    private void ContinueProgress()
+    {
+        NavigationManager.NavigateTo($"/Progress");
     }
 }

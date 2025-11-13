@@ -74,7 +74,25 @@ button {
     }
 
         .question-card .question-options .question-options-item {
+            outline: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: 1px solid var(--primary-color);
+            background: var(--primary-color);
+            color: var(--light-color);
+            transition: all ease 300ms;
             text-align: right;
+        }
+
+        .question-card .question-options ::deep input[type="radio"] {
+            display: none;
+        }
+
+        .question-card .question-options input:checked + .question-options-item {
+            border: 1px solid var(--primary-color);
+            background: var(--light-color);
+            color: var(--primary-color);
+            box-shadow: 0 0 5px 0px var(--primary-color);
         }
 
 .paginator nav {
