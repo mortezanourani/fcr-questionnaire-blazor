@@ -10,18 +10,30 @@
     else
     {
         <div class="content">
-            @questionnaire?.Title
+            <header class="progress-header">
+                @{
+                    var previousDisable =
+                    questionnaire!.Priority <= 1
+                    &&
+                    question!.Position <= 1;
+                    <button @onclick="PreviousQuestion"
+                            disabled=@(previousDisable ? "disabled" : false)>
+                        <img src="/back.svg" />
+                    </button>
+                }
+                <h4>@questionnaire?.Title</h4>
+            </header>
             @if (question is null)
             {
                 <Loading />
             }
             else
             {
+                <h5 class="question-number">سوال @question.Position از @questionnaire!.Questions.Count</h5>
                 <div class="question-card">
                     <div class="question">
-                        <h4 class="question-number">@question.Position</h4>
                         <span>
-                            <p class="question-text">@question.Text</p>
+                            <h4 class="question-text">@question.Text</h4>
                             <p class="question-clarification">@question.Clarification</p>
                         </span>
                     </div>
@@ -60,14 +72,6 @@
                             <button @onclick="NextQuestion"
                                     disabled=@(nextDisable ? "disabled" : false)>
                                 سوال بعد
-                            </button>
-                            var previousDisable =
-                                questionnaire.Priority <= 1
-                                &&
-                                question.Position <= 1;
-                            <button @onclick="PreviousQuestion"
-                                    disabled=@(previousDisable ? "disabled" : false)>
-                                سوال قبل
                             </button>
                         }
                     </nav>

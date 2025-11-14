@@ -16,9 +16,10 @@
             <p>
                 یک پرسشنامه در دستگاه شما در حال پاسخگویی است. آیا مایل به تکمیل همان پرسشنامه هستید؟
             </p>
-            <button @onclick="ContinueProgress">بله، همان پرسشنامه را ادامه می دهم.</button>
-            <p></p>
-            <button @onclick="StartProgress">خیر، پرسشنامه جدیدی می خواهم.</button>
+            <div class="button-wrapper">
+                <button @onclick="StartProgress">خیر، پرسشنامه جدیدی می خواهم.</button>
+                <a href="/Progress">بله، همان پرسشنامه را ادامه می دهم.</a>
+            </div>
         }
         else
         {
