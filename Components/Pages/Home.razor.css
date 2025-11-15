@@ -1,36 +1,25 @@
-﻿body * {
+﻿.main-header {
     position: relative;
-    box-sizing: border-box;
+    align-content: center;
+    height: 64px;
 }
 
-button {
-    color: var(--primary-color);
-    background-color: var(--light-color);
-}
-
-    button:hover {
-        color: var(--light-color);
-        background-color: var(--secondary-color);
+    .main-header .header-title {
+        text-align: center;
     }
 
-.container {
-    max-width: 1120px;
-    padding: 16px;
-    margin: 0 auto;
-    min-height: 100vh;
+.page-title {
+    text-align: center;
 }
 
-    .container .content {
-        margin: auto;
-        padding: 16px;
-        border-radius: 8px;
-        min-height: calc(100vh - 32px);
-    }
+.button-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
 
-        .container .content .button-wrapper {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-        }
+    .button-wrapper button {
+        min-width: 60%;
+    }

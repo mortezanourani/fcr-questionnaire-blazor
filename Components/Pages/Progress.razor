@@ -2,84 +2,81 @@
 
 @rendermode InteractiveServer
 
-<main class="container">
-    @if (participant is null || Questionnaires is null || Questions is null)
+@if (participant is null || Questionnaires is null || Questions is null)
+{
+    <Loading />
+}
+else
+{
+    <header class="main-header">
+        @{
+            var previousDisable =
+            questionnaire!.Priority <= 1
+            &&
+            question!.Position <= 1;
+            <button @onclick="PreviousQuestion"
+                    disabled=@(previousDisable ? "disabled" : false)>
+                <img src="/back.svg" />
+            </button>
+        }
+        <h4 class="header-title">پرسشنامه ترس از بازگشت سرطان</h4>
+    </header>
+    @if (question is null)
     {
         <Loading />
     }
     else
     {
-        <div class="content">
-            <header class="progress-header">
-                @{
-                    var previousDisable =
-                    questionnaire!.Priority <= 1
+        <h5 class="question-number">سوال @question.Position از @questionnaire!.Questions.Count</h5>
+        <QuestionCard />
+        <div class="question-card">
+            <div class="question">
+                <span>
+                    <h4 class="question-text">@question.Text</h4>
+                    <p class="question-clarification">@question.Clarification</p>
+                </span>
+            </div>
+            <div class="question-options">
+                @if (question.Scale.Type.ToString() == "Options")
+                {
+                    <InputRadioGroup @bind-Value="tempInt" @bind-Value:after="Answer">
+                        @foreach (Option option in question.Scale!.Options!.OrderBy(o => o.Score))
+                        {
+                            <InputRadio id="@option.Id" Value="option.Score" />
+                            <label for="@option.Id" class="question-options-item">
+                                @option.Label
+                            </label>
+                        }
+                    </InputRadioGroup>
+                }
+                else if (question.Scale.Type.ToString() == "Number")
+                {
+                    <InputNumber class="question-options" @bind-Value="tempInt" TValue="Int32" @bind-Value:after="Answer" />
+                }
+                else if (question.Scale.Type.ToString() == "Text")
+                {
+                    <InputText class="question-options" @bind-Value="tempValue" @bind-Value:after="Answer" />
+                }
+            </div>
+
+        </div>
+        <div class="paginator">
+            <nav role="navigation">
+                @if (Questions!.Count > 1)
+                {
+                    var nextDisable =
+                    questionnaire!.Priority >= Questionnaires!.Count
                     &&
-                    question!.Position <= 1;
-                    <button @onclick="PreviousQuestion"
-                            disabled=@(previousDisable ? "disabled" : false)>
-                        <img src="/back.svg" />
+                    question.Position >= Questions.Count;
+                    <button @onclick="NextQuestion"
+                            disabled=@(nextDisable ? "disabled" : false)>
+                        سوال بعد
                     </button>
                 }
-                <h4>@questionnaire?.Title</h4>
-            </header>
-            @if (question is null)
-            {
-                <Loading />
-            }
-            else
-            {
-                <h5 class="question-number">سوال @question.Position از @questionnaire!.Questions.Count</h5>
-                <div class="question-card">
-                    <div class="question">
-                        <span>
-                            <h4 class="question-text">@question.Text</h4>
-                            <p class="question-clarification">@question.Clarification</p>
-                        </span>
-                    </div>
-                    <div class="question-options">
-                        @if (question.Scale.Type.ToString() == "Options")
-                        {
-                            <InputRadioGroup @bind-Value="tempInt" @bind-Value:after="Answer">
-                                @foreach (Option option in question.Scale!.Options!.OrderBy(o => o.Score))
-                                {
-                                    <InputRadio id="@option.Id" Value="option.Score" />
-                                    <label for="@option.Id" class="question-options-item">
-                                        @option.Label
-                                    </label>
-                                }
-                            </InputRadioGroup>
-                        }
-                        else if (question.Scale.Type.ToString() == "Number")
-                        {
-                            <InputNumber class="question-options" @bind-Value="tempInt" TValue="Int32" @bind-Value:after="Answer" />
-                        }
-                        else if (question.Scale.Type.ToString() == "Text")
-                        {
-                            <InputText class="question-options" @bind-Value="tempValue" @bind-Value:after="Answer" />
-                        }
-                    </div>
-
-                </div>
-                <div class="paginator">
-                    <nav role="navigation">
-                        @if (Questions!.Count > 1)
-                        {
-                            var nextDisable =
-                                questionnaire!.Priority >= Questionnaires!.Count
-                                &&
-                                question.Position >= Questions.Count;
-                            <button @onclick="NextQuestion"
-                                    disabled=@(nextDisable ? "disabled" : false)>
-                                سوال بعد
-                            </button>
-                        }
-                    </nav>
-                </div>
-            }
+            </nav>
         </div>
     }
-</main>
+}
 
 @code {
     private Participant? participant;
@@ -105,6 +102,11 @@
 
         questionnaire = Questionnaires.FirstOrDefault(q => q.Priority == 1)!;
 
+        if (questionnaire is null)
+        {
+            return;
+        }
+
         Questions = await context.Questions
             .Include(q => q.Scale)
                 .ThenInclude(s => s.Options)
@@ -121,6 +123,12 @@
         {
             using var context = DbContextFactory.CreateDbContext();
             var localId = await localStorage.GetItemAsync<string>("participantId");
+
+            if (localId is null)
+            {
+                return;
+            }
+
             participant ??= await context.Participants
                 .FirstOrDefaultAsync(p => p.Id.ToString() == localId);
             firstRender = false;

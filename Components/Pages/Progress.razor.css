@@ -1,48 +1,18 @@
-﻿body * {
-    position: relative;
-    box-sizing: border-box;
-}
-
-button {
+﻿button {
     width: 100%;
 }
 
-.container {
-    width: 100%;
-    padding: 48px 24px 24px;
-    margin: 0 auto;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: stretch;
-    gap: 16px;
-}
-
-    .container .content {
-        width: 100%;
-        max-width: 1120px;
-        padding: 0;
-        margin: auto;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: stretch;
-        align-items: stretch;
-        gap: 16px;
-    }
-
-.progress-header {
+.main-header {
     position: relative;
     align-content: center;
     height: 64px;
 }
 
-    .progress-header h4 {
+    .main-header .header-title {
         text-align: center;
     }
 
-    .progress-header button {
+    .main-header button {
         position: absolute;
         padding: 0;
         width: auto;
@@ -53,9 +23,9 @@ button {
         z-index: 99;
     }
 
-    .progress-header button:hover {
-        background: transparent;
-    }
+        .main-header button:hover {
+            background: transparent;
+        }
 
 .question-number {
     text-align: center;
@@ -64,7 +34,7 @@ button {
 
 .question-card {
     flex: 1;
-    padding: 8px;
+    padding: 0px;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
@@ -91,7 +61,7 @@ button {
 
         .question-card .question .question-clarification {
             margin-top: 16px;
-            color: gray;
+            color: darkgray;
         }
 
     .question-card .question-options {
@@ -146,46 +116,3 @@ button {
             background-color: var(--secondary-color);
             border-color: var(--secondary-color);
         }
-
-/*
-::deep table.quickgrid {
-    --col-gap: 0;
-    height: 100%;
-    width: 100%;
-    flex: 1;
-}
-
-    ::deep table.quickgrid thead {
-        display: none;
-    }
-
-    ::deep table.quickgrid > tbody > tr > td {
-        padding: 0;
-    }
-
-    ::deep .question-card {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: stretch;
-    }
-
-    ::deep table.quickgrid span {
-        margin-bottom: auto;
-    }
-
-.paginator {
-}
-
-    .paginator nav {
-        display: flex;
-        flex-direction: row-reverse;
-        justify-content: space-between;
-        align-items: center;
-        gap: 32px;
-    }
-
-        .paginator nav button {
-            width: auto;
-        }
-*/

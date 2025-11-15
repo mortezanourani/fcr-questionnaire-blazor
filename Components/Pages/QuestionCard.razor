@@ -1,0 +1,37 @@
+﻿@* 
+<div class="question-card">
+    <div class="question">
+        <span>
+            <h4 class="question-text">@question.Text</h4>
+            <p class="question-clarification">@question.Clarification</p>
+        </span>
+    </div>
+    <div class="question-options">
+        @if (question.Scale.Type.ToString() == "Options")
+        {
+            <InputRadioGroup @bind-Value="tempInt" @bind-Value:after="Answer">
+                @foreach (Option option in question.Scale!.Options!.OrderBy(o => o.Score))
+                {
+                    <InputRadio id="@option.Id" Value="option.Score" />
+                    <label for="@option.Id" class="question-options-item">
+                        @option.Label
+                    </label>
+                }
+            </InputRadioGroup>
+        }
+        else if (question.Scale.Type.ToString() == "Number")
+        {
+            <InputNumber class="question-options" @bind-Value="tempInt" TValue="Int32" @bind-Value:after="Answer" />
+        }
+        else if (question.Scale.Type.ToString() == "Text")
+        {
+            <InputText class="question-options" @bind-Value="tempValue" @bind-Value:after="Answer" />
+        }
+    </div>
+
+</div>
+*@
+
+@code {
+
+}

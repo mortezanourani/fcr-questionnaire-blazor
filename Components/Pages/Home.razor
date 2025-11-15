@@ -4,29 +4,31 @@
 
 @rendermode InteractiveServer
 
-<main class="container">
-    <div class="content">
-        <h1>ممنونیم که برای کمک به این پژوهش با ما همکاری می کنید.</h1>
+<header class="main-header">
+    <h4 class="header-title">پرسشنامه ترس از بازگشت سرطان</h4>
+</header>
 
-        <p>
-            پرسشنامه آنلاین پژوهش سنجش ترس از بازگشت سرطان در مراقبین خانوادگی بیماران سرطانی
-        </p>
-        @if (InProgress)
-        {
-            <p>
-                یک پرسشنامه در دستگاه شما در حال پاسخگویی است. آیا مایل به تکمیل همان پرسشنامه هستید؟
-            </p>
-            <div class="button-wrapper">
-                <button @onclick="StartProgress">خیر، پرسشنامه جدیدی می خواهم.</button>
-                <a href="/Progress">بله، همان پرسشنامه را ادامه می دهم.</a>
-            </div>
-        }
-        else
-        {
-            <button @onclick="StartProgress">شروع پاسخگویی</button>
-        }
+<h3 class="page-title">ممنونیم که برای کمک به این پژوهش با ما همکاری می کنید.</h3>
+
+<p>
+    پرسشنامه آنلاین پژوهش سنجش ترس از بازگشت سرطان در مراقبین خانوادگی بیماران سرطانی
+</p>
+@if (InProgress)
+{
+    <p>
+        یک پرسشنامه در دستگاه شما در حال پاسخگویی است. آیا مایل به تکمیل همان پرسشنامه هستید؟
+    </p>
+    <div class="button-wrapper">
+        <button class="light-button" @onclick="StartProgress">خیر، پرسشنامه جدیدی می خواهم.</button>
+        <a href="/Progress">بله، همان پرسشنامه را ادامه می دهم.</a>
     </div>
-</main>
+}
+else
+{
+    <div class="button-wrapper">
+        <button class="light-button" @onclick="StartProgress">شروع پاسخگویی</button>
+    </div>
+}
 
 @code {
     private bool InProgress = false;
