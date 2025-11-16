@@ -1,37 +1,135 @@
-﻿@* 
-<div class="question-card">
-    <div class="question">
-        <span>
-            <h4 class="question-text">@question.Text</h4>
-            <p class="question-clarification">@question.Clarification</p>
-        </span>
+﻿@if (question is null)
+{
+    <Loading />
+}
+else
+{
+    <div class="question-card">
+        <div class="question">
+            <span>
+                <h4 class="question-text">@question.Text</h4>
+                <p class="question-clarification">@question.Clarification</p>
+            </span>
+        </div>
+        <div class="question-options">
+            @if (question.Scale.Type.ToString() == "Options")
+            {
+                <InputRadioGroup @bind-value="tempInt" @bind-value:after="HandleQuestionAnswer">
+                    @foreach (Option option in question.Scale!.Options!.OrderBy(o => o.Score))
+                    {
+                        <InputRadio id="@option.Id" value="option.Score" />
+                        <label for="@option.Id" class="question-options-item">
+                            @option.Label
+                        </label>
+                    }
+                </InputRadioGroup>
+            }
+            else if (question.Scale.Type.ToString() == "Number")
+            {
+                <InputNumber class="question-options" @bind-value="tempInt" tvalue="int32" @bind-value:after="HandleQuestionAnswer" />
+            }
+            else if (question.Scale.Type.ToString() == "Text")
+            {
+                <InputText class="question-options" @bind-value="tempValue" @bind-value:after="HandleQuestionAnswer" />
+            }
+        </div>
     </div>
-    <div class="question-options">
-        @if (question.Scale.Type.ToString() == "Options")
-        {
-            <InputRadioGroup @bind-Value="tempInt" @bind-Value:after="Answer">
-                @foreach (Option option in question.Scale!.Options!.OrderBy(o => o.Score))
-                {
-                    <InputRadio id="@option.Id" Value="option.Score" />
-                    <label for="@option.Id" class="question-options-item">
-                        @option.Label
-                    </label>
-                }
-            </InputRadioGroup>
-        }
-        else if (question.Scale.Type.ToString() == "Number")
-        {
-            <InputNumber class="question-options" @bind-Value="tempInt" TValue="Int32" @bind-Value:after="Answer" />
-        }
-        else if (question.Scale.Type.ToString() == "Text")
-        {
-            <InputText class="question-options" @bind-Value="tempValue" @bind-Value:after="Answer" />
-        }
-    </div>
-
-</div>
-*@
+}
 
 @code {
+    [Parameter]
+    public Guid QuestionId { get; set; }
 
+    [Parameter]
+    public Guid ParticipantId { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> OnAnswered{ get; set; }
+
+    private Question? question { get; set; }
+
+    private int tempInt;
+    private string? tempValue;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        question = await context.Questions
+            .Include(q => q.Scale)
+                .ThenInclude(s => s.Options)
+            .FirstOrDefaultAsync(q => q.Id == QuestionId);
+
+        if (question is null)
+        {
+            return;
+        }
+
+        var response = await context.Responses
+        .FirstOrDefaultAsync(r =>
+            r.ParticipantId == ParticipantId
+            &&
+            r.QuestionId == QuestionId
+        );
+
+        if (response is null)
+        {
+            tempValue = null!;
+            tempInt = -1;
+            return;
+        }
+        else
+        {
+            tempValue = response.Value;
+            if (question.Scale.Type != ScaleType.Text)
+            {
+                tempInt = int.Parse(response.Value);
+            }
+        }
+    }
+
+    private async Task HandleQuestionAnswer()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var response = await context.Responses
+            .FirstOrDefaultAsync(r =>
+                r.ParticipantId == ParticipantId
+                &&
+                r.QuestionId == QuestionId
+            );
+
+        if (response is null)
+        {
+            response = new Response
+            {
+                ParticipantId = ParticipantId,
+                QuestionId = question!.Id,
+            };
+            response.Value = tempValue;
+            if (question!.Scale.Type != ScaleType.Text)
+            {
+                response.Value = tempInt.ToString();
+            }
+            context.Responses.Add(response);
+        }
+        else
+        {
+            response.Value = tempValue;
+            if (question!.Scale.Type != ScaleType.Text)
+            {
+                response.Value = tempInt.ToString();
+            }
+            context.Attach(response!).State = EntityState.Modified;
+        }
+
+        try
+        {
+            await context.SaveChangesAsync();
+            await OnAnswered.InvokeAsync(QuestionId);
+        }
+        catch (Exception except)
+        {
+            // NavigationManager.NavigateTo(except.InnerException!.Message);
+        }
+    }
 }
