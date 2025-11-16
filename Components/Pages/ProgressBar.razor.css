@@ -17,6 +17,7 @@
     }
 
     .progress-bar .progress {
+        max-width: 100%;
         background: var(--light-color);
         transition: all ease 250ms;
     }

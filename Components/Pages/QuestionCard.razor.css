@@ -30,19 +30,34 @@
             color: darkgray;
         }
 
-    .question-card .question-options {
+    .question-card .question-answer {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         align-items: stretch;
         background: var(--light-color);
         box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 1px 2px 4px 0 rgba(0, 0, 0, 0.2);
-        flex: 1 0 50%;
-        max-height: 50%;
-        border-radius: 2px;
+        border-radius: 3px;
+        aspect-ratio: 1 !important;
+        align-content: center;
     }
 
-        .question-card .question-options .question-options-item {
+@media screen and (min-width: 800px) {
+    .question-card .question-answer {
+        aspect-ratio: 1.5 !important;
+    }
+}
+
+        .question-card .question-answer ::deep input[type="radio"] {
+            display: none;
+        }
+
+        .question-card .question-answer input:checked + .question-options-item {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .question-card .question-answer .question-options-item {
             padding: 8px 12px;
             color: var(--black-color);
             border-bottom: 1px solid lightgray;
@@ -53,15 +68,42 @@
             align-content: center;
         }
 
-            .question-card .question-options .question-options-item:last-child {
+            .question-card .question-answer .question-options-item:last-child {
                 border: none;
             }
 
-        .question-card .question-options ::deep input[type="radio"] {
-            display: none;
+        .question-card .question-answer .input-answer {
+            flex: 1;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
         }
 
-        .question-card .question-options input:checked + .question-options-item {
-            color: var(--primary-color);
-            font-weight: 600;
+        .question-card .question-answer .input-answer button {
+            width: 60%;
+            height: 40px;
         }
+
+        .question-card .question-answer .input-answer .input-wrapper {
+            flex: 1;
+            width: 100%;
+            padding: 24px;
+            text-align: center;
+            align-content: center;
+            box-sizing: border-box;
+        }
+
+            .question-card .question-answer .input-answer .input-wrapper ::deep input {
+                width: 100%;
+                border: none;
+                outline: none;
+                padding: 6px 12px;
+                font-size: 16px;
+                text-align: center;
+                border-radius: 30px;
+                border: 2px solid var(--secondary-color);
+                box-sizing: border-box;
+            }

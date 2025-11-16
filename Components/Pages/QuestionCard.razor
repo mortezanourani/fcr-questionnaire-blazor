@@ -11,26 +11,29 @@ else
                 <p class="question-clarification">@question.Clarification</p>
             </span>
         </div>
-        <div class="question-options">
+        <div class="question-answer">
             @if (question.Scale.Type.ToString() == "Options")
             {
-                <InputRadioGroup @bind-value="tempInt" @bind-value:after="HandleQuestionAnswer">
+                <InputRadioGroup @bind-value="tempOption">
                     @foreach (Option option in question.Scale!.Options!.OrderBy(o => o.Score))
                     {
-                        <InputRadio id="@option.Id" value="option.Score" />
+                        <InputRadio id="@option.Id" value="option.Score" @onclick="HandleQuestionAnswer" />
                         <label for="@option.Id" class="question-options-item">
                             @option.Label
                         </label>
                     }
                 </InputRadioGroup>
             }
-            else if (question.Scale.Type.ToString() == "Number")
+            else
             {
-                <InputNumber class="question-options" @bind-value="tempInt" tvalue="int32" @bind-value:after="HandleQuestionAnswer" />
-            }
-            else if (question.Scale.Type.ToString() == "Text")
-            {
-                <InputText class="question-options" @bind-value="tempValue" @bind-value:after="HandleQuestionAnswer" />
+                <div class="input-answer">
+                    <div class="input-wrapper">
+                        <InputText @bind-value="tempValue" @bind-value:after="HandleQuestionAnswer" />
+                    </div>
+                    <button @onclick="HandleQuestionAnswer">
+                        تایید
+                    </button>
+                </div>
             }
         </div>
     </div>
@@ -48,7 +51,7 @@ else
 
     private Question? question { get; set; }
 
-    private int tempInt;
+    private int? tempOption = null!;
     private string? tempValue;
 
     protected override async Task OnParametersSetAsync()
@@ -75,15 +78,15 @@ else
         if (response is null)
         {
             tempValue = null!;
-            tempInt = -1;
+            tempOption = null!;
             return;
         }
         else
         {
             tempValue = response.Value;
-            if (question.Scale.Type != ScaleType.Text)
+            if (question.Scale.Type == ScaleType.Options)
             {
-                tempInt = int.Parse(response.Value);
+                tempOption = int.Parse(response.Value);
             }
         }
     }
@@ -106,18 +109,18 @@ else
                 QuestionId = question!.Id,
             };
             response.Value = tempValue;
-            if (question!.Scale.Type != ScaleType.Text)
+            if (question.Scale.Type == ScaleType.Options)
             {
-                response.Value = tempInt.ToString();
+                response.Value = tempOption.ToString();
             }
             context.Responses.Add(response);
         }
         else
         {
             response.Value = tempValue;
-            if (question!.Scale.Type != ScaleType.Text)
+            if (question.Scale.Type == ScaleType.Options)
             {
-                response.Value = tempInt.ToString();
+                response.Value = tempOption.ToString();
             }
             context.Attach(response!).State = EntityState.Modified;
         }

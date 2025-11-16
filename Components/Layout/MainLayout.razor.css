@@ -29,6 +29,12 @@ body * {
         gap: 16px;
     }
 
+@media screen and (min-width: 800px) {
+    .container .content {
+        width: 50%;
+    }
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;

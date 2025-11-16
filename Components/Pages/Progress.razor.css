@@ -27,25 +27,16 @@
             background: transparent;
         }
 
-.question-number {
-    text-align: center;
-    color: var(--secondary-color);
-}
-
-.paginator nav {
+.question-wrapper {
+    flex-grow: 1;
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: center;
-    gap: 32px;
+    align-content: stretch;
+    gap: 16px;
 }
 
-    .paginator nav button {
-        width: auto;
+    .question-wrapper .question-number {
+        text-align: center;
+        color: var(--secondary-color);
     }
-
-        .paginator nav button:disabled {
-            color: lightgray;
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }

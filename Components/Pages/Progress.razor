@@ -27,25 +27,10 @@ else
     }
     else
     {
-        <h5 class="question-number">سوال @question.Position از @questionnaire!.Questions.Count</h5>
-        <QuestionCard QuestionId="question.Id" ParticipantId="participant.Id" OnAnswered="NextQuestion" />
-        @*
-        <div class="paginator">
-            <nav role="navigation">
-                @if (Questions!.Count > 1)
-                {
-                    var nextDisable =
-                    questionnaire!.Priority >= Questionnaires!.Count
-                    &&
-                    question.Position >= Questions.Count;
-                    <button @onclick="NextQuestion"
-                            disabled=@(nextDisable ? "disabled" : false)>
-                        سوال بعد
-                    </button>
-                }
-            </nav>
+        <div class="question-wrapper">
+            <h5 class="question-number">بخش @questionnaire.Priority: @questionnaire.Title</h5>
+            <QuestionCard QuestionId="question.Id" ParticipantId="participant.Id" OnAnswered="HandleAnswer" />
         </div>
-        *@
         <footer>
             <ProgressBar ResponsesCount="@ResponsesCount" />
         </footer>
@@ -65,32 +50,6 @@ else
     private string tempValue = null!;
 
     private int ResponsesCount = 0;
-
-    protected override async Task OnInitializedAsync()
-    {
-        using var context = DbContextFactory.CreateDbContext();
-
-        Questionnaires = await context.Questionnaires
-            .Include(q => q.Questions)
-            .OrderBy(q => q.Priority)
-            .ToListAsync();
-
-        questionnaire = Questionnaires.FirstOrDefault(q => q.Priority == 1)!;
-
-        if (questionnaire is null)
-        {
-            return;
-        }
-
-        Questions = await context.Questions
-            .Include(q => q.Scale)
-                .ThenInclude(s => s.Options)
-            .Where(q => q.QuestionnaireId == questionnaire!.Id)
-            .OrderBy(q => q.Position)
-            .ToListAsync();
-
-        question = Questions.FirstOrDefault();
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -112,11 +71,37 @@ else
                 .Where(r => r.ParticipantId == participant!.Id)
                 .Count();
 
+            var lastQuestion = await context.Questions
+                .OrderBy(q => q.Position)
+                .OrderBy(q => q.Questionnaire.Priority)
+                .Skip(ResponsesCount)
+                .Take(1)
+                .FirstOrDefaultAsync();
+
+            if (lastQuestion is not null)
+            {
+                Questionnaires = await context.Questionnaires
+                    .Include(q => q.Questions)
+                    .OrderBy(q => q.Priority)
+                    .ToListAsync();
+
+                questionnaire = Questionnaires!.FirstOrDefault(q => q.Id == lastQuestion.QuestionnaireId);
+
+                Questions = await context.Questions
+                    .Include(q => q.Scale)
+                        .ThenInclude(s => s.Options)
+                    .Where(q => q.QuestionnaireId == questionnaire!.Id)
+                    .OrderBy(q => q.Position)
+                    .ToListAsync();
+
+                question = Questions!.FirstOrDefault(q => q.Id == lastQuestion.Id);
+            }
+
             StateHasChanged();
         }
     }
 
-    private async Task NextQuestion(int responsesCount)
+    private async Task NextQuestion()
     {
         var currentQuestion = question!.Position;
         if (currentQuestion < Questions!.Count())
@@ -143,7 +128,7 @@ else
             }
         }
 
-        ResponsesCount = responsesCount;
+        StateHasChanged();
     }
 
     private async Task PreviousQuestion()
@@ -172,5 +157,14 @@ else
                 question = Questions.LastOrDefault();
             }
         }
+
+        StateHasChanged();
+    }
+
+    private async Task HandleAnswer(int responsesCount)
+    {
+        await NextQuestion();
+
+        ResponsesCount = responsesCount;
     }
 }
