@@ -29,7 +29,7 @@ else
     {
         <h5 class="question-number">سوال @question.Position از @questionnaire!.Questions.Count</h5>
         <QuestionCard QuestionId="question.Id" ParticipantId="participant.Id" OnAnswered="NextQuestion" />
-
+        @*
         <div class="paginator">
             <nav role="navigation">
                 @if (Questions!.Count > 1)
@@ -45,6 +45,10 @@ else
                 }
             </nav>
         </div>
+        *@
+        <footer>
+            <ProgressBar ResponsesCount="@ResponsesCount" />
+        </footer>
     }
 }
 
@@ -60,7 +64,7 @@ else
     private int tempInt;
     private string tempValue = null!;
 
-    private Response? Response;
+    private int ResponsesCount = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -103,11 +107,16 @@ else
             participant ??= await context.Participants
                 .FirstOrDefaultAsync(p => p.Id.ToString() == localId);
             firstRender = false;
+
+            ResponsesCount = context.Responses
+                .Where(r => r.ParticipantId == participant!.Id)
+                .Count();
+
             StateHasChanged();
         }
     }
 
-    private async Task NextQuestion()
+    private async Task NextQuestion(int responsesCount)
     {
         var currentQuestion = question!.Position;
         if (currentQuestion < Questions!.Count())
@@ -133,6 +142,8 @@ else
                 question = Questions.FirstOrDefault();
             }
         }
+
+        ResponsesCount = responsesCount;
     }
 
     private async Task PreviousQuestion()

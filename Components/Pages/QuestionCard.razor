@@ -44,7 +44,7 @@ else
     public Guid ParticipantId { get; set; }
 
     [Parameter]
-    public EventCallback<Guid> OnAnswered{ get; set; }
+    public EventCallback<int> OnAnswered{ get; set; }
 
     private Question? question { get; set; }
 
@@ -125,7 +125,12 @@ else
         try
         {
             await context.SaveChangesAsync();
-            await OnAnswered.InvokeAsync(QuestionId);
+
+            var responsesCount = await context.Responses
+                .Where(r => r.ParticipantId == ParticipantId)
+                .CountAsync();
+
+            await OnAnswered.InvokeAsync(responsesCount);
         }
         catch (Exception except)
         {

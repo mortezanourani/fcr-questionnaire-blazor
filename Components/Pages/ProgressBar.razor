@@ -1,0 +1,29 @@
+﻿@if (progressPercent is not null)
+{
+    <div class="progress-bar">
+        <div class="bar"></div>
+        <div class="progress" style="width: @progressPercent%;"></div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int ResponsesCount { get; set; }
+
+    private int questionsCount = 0;
+
+    private double? progressPercent = null!;
+
+    protected override void OnInitialized()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        questionsCount = context.Questions
+            .Count();
+    }
+
+    protected override void OnParametersSet()
+    {
+        progressPercent = (ResponsesCount * 100) / questionsCount;
+    }
+}

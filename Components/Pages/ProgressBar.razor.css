@@ -1,0 +1,22 @@
+﻿.progress-bar {
+    position: relative;
+    display: block;
+}
+
+    .progress-bar > div {
+        position: absolute;
+        right: 0;
+        top: 6px;
+        height: 4px;
+        border-radius: 4px;
+    }
+
+    .progress-bar .bar {
+        width: 100%;
+        background: var(--secondary-color);
+    }
+
+    .progress-bar .progress {
+        background: var(--light-color);
+        transition: all ease 250ms;
+    }
