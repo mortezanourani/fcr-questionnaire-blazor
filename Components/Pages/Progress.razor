@@ -46,9 +46,6 @@ else
     private List<Question>? Questions;
     private Question? question;
 
-    private int tempInt;
-    private string tempValue = null!;
-
     private int ResponsesCount = 0;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -80,12 +77,14 @@ else
                 NavigationManager.NavigateTo("/");
             }
 
-            var lastQuestion = await context.Questions
+            var lastQuestion = context.Questions
+                .Include(q => q.Questionnaire)
                 .OrderBy(q => q.Position)
+                .ToList()
                 .OrderBy(q => q.Questionnaire.Priority)
+                .ToList()
                 .Skip(ResponsesCount)
-                .Take(1)
-                .FirstOrDefaultAsync();
+                .FirstOrDefault();
 
             if (lastQuestion is not null)
             {

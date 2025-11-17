@@ -108,19 +108,19 @@ else
                 ParticipantId = ParticipantId,
                 QuestionId = question!.Id,
             };
-            response.Value = tempValue;
-            if (question.Scale.Type == ScaleType.Options)
+            response.Value = tempValue!;
+            if (question!.Scale.Type == ScaleType.Options)
             {
-                response.Value = tempOption.ToString();
+                response.Value = tempOption.ToString()!;
             }
             context.Responses.Add(response);
         }
         else
         {
-            response.Value = tempValue;
-            if (question.Scale.Type == ScaleType.Options)
+            response.Value = tempValue!;
+            if (question!.Scale.Type == ScaleType.Options)
             {
-                response.Value = tempOption.ToString();
+                response.Value = tempOption.ToString()!;
             }
             context.Attach(response!).State = EntityState.Modified;
         }
@@ -135,9 +135,8 @@ else
 
             await OnAnswered.InvokeAsync(responsesCount);
         }
-        catch (Exception except)
+        catch
         {
-            // NavigationManager.NavigateTo(except.InnerException!.Message);
         }
     }
 }
