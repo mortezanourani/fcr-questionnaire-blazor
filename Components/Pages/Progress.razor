@@ -71,6 +71,15 @@ else
                 .Where(r => r.ParticipantId == participant!.Id)
                 .Count();
 
+            var questionsCount = context.Questions
+                .Count();
+
+            if (ResponsesCount >= questionsCount)
+            {
+                await localStorage.RemoveItemAsync("participantId");
+                NavigationManager.NavigateTo("/");
+            }
+
             var lastQuestion = await context.Questions
                 .OrderBy(q => q.Position)
                 .OrderBy(q => q.Questionnaire.Priority)
