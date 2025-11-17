@@ -1,0 +1,41 @@
+﻿@if (Questionnaire is null)
+{
+    <Loading />
+}
+else
+{
+    <div class="questionnaire-description-card">
+        <p class="questionnaire-description">
+            @Questionnaire.Description
+        </p>
+        <button class="light-button" @onclick="HandleContinue">ادامه</button>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Guid QuestionnaireId { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnContinue { get; set; }
+
+    private Questionnaire? Questionnaire;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        Questionnaire = await context.Questionnaires
+            .FirstOrDefaultAsync(q => q.Id == QuestionnaireId);
+
+        if (string.IsNullOrEmpty(Questionnaire!.Description))
+        {
+            await HandleContinue();
+        }
+    }
+
+    private async Task HandleContinue()
+    {
+        await OnContinue.InvokeAsync(false);
+    }
+}

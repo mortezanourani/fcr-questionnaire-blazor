@@ -1,0 +1,19 @@
+﻿.questionnaire-description-card {
+    flex: 1;
+    padding: 0px;
+    text-align: center;
+    align-content: center;
+}
+
+    .questionnaire-description-card .questionnaire-description {
+        padding: 24px 16px;
+        border-radius: 8px;
+        line-height: 2.1;
+        color: var(--black-color);
+        background: rgba(255, 255, 255, .6);
+        margin-bottom: 24px;
+    }
+
+    .questionnaire-description-card button {
+        min-width: 60%;
+    }

@@ -10,16 +10,16 @@ else
 {
     <header class="main-header">
         @{
-            var previousDisable =
-            questionnaire!.Priority <= 1
-            &&
-            question!.Position <= 1;
-            <button @onclick="PreviousQuestion"
-                    disabled=@(previousDisable ? "disabled" : false)>
-                <img src="/back.svg" />
-            </button>
+            if (!(question!.Position <= 1 && questionnaire!.Priority <= 1) 
+                &&
+                !ShouldDisplayDescription)
+            {
+                <button @onclick="PreviousQuestion">
+                    <img src="/back.svg" />
+                </button>
+            }
         }
-        <h4 class="header-title">پرسشنامه ترس از بازگشت سرطان</h4>
+        <h4 class="header-title">پژوهش مراقبان بیماران مبتلا به سرطان</h4>
     </header>
     @if (question is null || participant is null)
     {
@@ -28,8 +28,15 @@ else
     else
     {
         <div class="question-wrapper">
-            <h5 class="question-number">بخش @questionnaire.Priority: @questionnaire.Title</h5>
-            <QuestionCard QuestionId="question.Id" ParticipantId="participant.Id" OnAnswered="HandleAnswer" />
+            <h5 class="question-number">بخش @questionnaire!.Priority: @questionnaire.Title</h5>
+            @if (ShouldDisplayDescription)
+            {
+                <QuestionnaireDescriptionCard QuestionnaireId="@questionnaire.Id" OnContinue="HandleContinue" />
+            }
+            else
+            {
+                <QuestionCard QuestionId="question.Id" ParticipantId="participant.Id" OnAnswered="HandleAnswer" />
+            }
         </div>
         <footer>
             <ProgressBar ResponsesCount="@ResponsesCount" />
@@ -47,6 +54,8 @@ else
     private Question? question;
 
     private int ResponsesCount = 0;
+
+    private bool ShouldDisplayDescription = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -103,6 +112,11 @@ else
                     .ToListAsync();
 
                 question = Questions!.FirstOrDefault(q => q.Id == lastQuestion.Id);
+
+                if(question!.Position == 1)
+                {
+                    ShouldDisplayDescription = true;
+                }
             }
 
             StateHasChanged();
@@ -133,6 +147,8 @@ else
                     .ToListAsync();
 
                 question = Questions.FirstOrDefault();
+
+                ShouldDisplayDescription = true;
             }
         }
 
@@ -174,5 +190,12 @@ else
         await NextQuestion();
 
         ResponsesCount = responsesCount;
+    }
+
+    private void HandleContinue(bool ShouldDisplay)
+    {
+        ShouldDisplayDescription = ShouldDisplay;
+
+        StateHasChanged();
     }
 }
