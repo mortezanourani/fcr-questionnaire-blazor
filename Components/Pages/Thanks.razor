@@ -1,0 +1,41 @@
+﻿@page "/Thanks"
+
+<PageTitle>@AppTitle</PageTitle>
+
+<header class="main-header">
+    <h4 class="header-title">@AppTitle</h4>
+</header>
+
+<p>@LastPageDescription</p>
+
+<div class="button-wrapper">
+    <button class="light-button" @onclick="DownloadGift">دانلود هدیه</button>
+</div>
+
+@code {
+    private bool InProgress = false;
+
+    private string? AppTitle { get; set; }
+    private string? LastPageDescription { get; set; }
+    private string? GiftLink { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        using var context = DbContextFactory.CreateDbContext();
+        var generalInformation = await context.GeneralInformation
+            .FirstOrDefaultAsync();
+
+        AppTitle = generalInformation!.ApplicationTitle;
+        LastPageDescription = generalInformation!.LastPageDescription;
+        GiftLink = generalInformation!.Id.ToString();
+    }
+
+    protected async Task DownloadGift()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        // Download process
+    }
+}

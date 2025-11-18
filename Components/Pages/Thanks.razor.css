@@ -1,0 +1,25 @@
+﻿.main-header {
+    position: relative;
+    align-content: center;
+    height: 64px;
+}
+
+    .main-header .header-title {
+        text-align: center;
+    }
+
+.page-title {
+    text-align: center;
+}
+
+.button-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+    .button-wrapper button {
+        min-width: 60%;
+    }

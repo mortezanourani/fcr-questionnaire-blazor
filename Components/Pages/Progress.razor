@@ -21,14 +21,14 @@ else
         }
         <h4 class="header-title">پژوهش مراقبان بیماران مبتلا به سرطان</h4>
     </header>
-    @if (question is null || participant is null)
+    @if (questionnaire is null || question is null || participant is null)
     {
         <Loading />
     }
     else
     {
         <div class="question-wrapper">
-            <h5 class="question-number">بخش @questionnaire!.Priority: @questionnaire.Title</h5>
+            <h5 class="question-number">بخش @questionnaire.Priority: @questionnaire.Title</h5>
             @if (ShouldDisplayDescription)
             {
                 <QuestionnaireDescriptionCard QuestionnaireId="@questionnaire.Id" OnContinue="HandleContinue" />
@@ -66,25 +66,16 @@ else
 
             if (localId is null)
             {
-                return;
+                NavigationManager.NavigateTo("/", true);
             }
 
             participant ??= await context.Participants
                 .FirstOrDefaultAsync(p => p.Id.ToString() == localId);
             firstRender = false;
 
-            ResponsesCount = context.Responses
+            ResponsesCount = await context.Responses
                 .Where(r => r.ParticipantId == participant!.Id)
-                .Count();
-
-            var questionsCount = context.Questions
-                .Count();
-
-            if (ResponsesCount >= questionsCount)
-            {
-                await localStorage.RemoveItemAsync("participantId");
-                NavigationManager.NavigateTo("/");
-            }
+                .CountAsync();
 
             var lastQuestion = context.Questions
                 .Include(q => q.Questionnaire)
@@ -136,7 +127,13 @@ else
             questionnaire = Questionnaires!
                 .FirstOrDefault(q => q.Priority == currentQuestionnaire + 1);
 
-            if (questionnaire is not null)
+            if (questionnaire is null)
+            {
+                await localStorage.RemoveItemAsync("participantId");
+                NavigationManager.NavigateTo("/Thanks", true);
+                return;
+            }
+            else
             {
                 using var context = DbContextFactory.CreateDbContext();
                 Questions = await context.Questions

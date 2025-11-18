@@ -1,37 +1,36 @@
 ﻿@page "/"
 
-<PageTitle>پرسشنامه آنلاین پژوهش سنجش ترس از بازگشت سرطان در مراقبین خانوادگی بیماران سرطانی</PageTitle>
+<PageTitle>@AppTitle</PageTitle>
 
 @rendermode InteractiveServer
 
 <header class="main-header">
-    <h4 class="header-title">پرسشنامه ترس از بازگشت سرطان</h4>
+    <h4 class="header-title">@AppTitle</h4>
 </header>
 
-<h3 class="page-title">ممنونیم که برای کمک به این پژوهش با ما همکاری می کنید.</h3>
+<p>@FirstPageDescription</p>
 
-<p>
-    پرسشنامه آنلاین پژوهش سنجش ترس از بازگشت سرطان در مراقبین خانوادگی بیماران سرطانی
-</p>
-@if (InProgress)
-{
-    <p>
-        یک پرسشنامه در دستگاه شما در حال پاسخگویی است. آیا مایل به تکمیل همان پرسشنامه هستید؟
-    </p>
-    <div class="button-wrapper">
-        <button class="light-button" @onclick="StartProgress">خیر، پرسشنامه جدیدی می خواهم.</button>
-        <a href="/Progress">بله، همان پرسشنامه را ادامه می دهم.</a>
-    </div>
-}
-else
-{
-    <div class="button-wrapper">
-        <button class="light-button" @onclick="StartProgress">شروع پاسخگویی</button>
-    </div>
-}
+<div class="button-wrapper">
+    <button class="light-button" @onclick="StartProgress">شروع پاسخگویی</button>
+</div>
 
 @code {
     private bool InProgress = false;
+
+    private string? AppTitle { get; set; }
+    private string? FirstPageDescription { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        using var context = DbContextFactory.CreateDbContext();
+        var generalInformation = await context.GeneralInformation
+            .FirstOrDefaultAsync();
+
+        AppTitle = generalInformation!.ApplicationTitle;
+        FirstPageDescription = generalInformation!.FirstPageDescription;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -41,7 +40,8 @@ else
             var localId = await localStorage.GetItemAsync<string>("participantId");
             if (localId is not null)
             {
-                InProgress = true;
+                NavigationManager.NavigateTo("/Progress");
+                return;
             }
             firstRender = false;
             StateHasChanged();
@@ -67,10 +67,5 @@ else
         {
 
         }
-    }
-
-    private void ContinueProgress()
-    {
-        NavigationManager.NavigateTo($"/Progress");
     }
 }
