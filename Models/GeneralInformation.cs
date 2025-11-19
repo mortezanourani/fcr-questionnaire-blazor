@@ -10,4 +10,6 @@ public class GeneralInformation
     public string? FirstPageDescription { get; set; }
 
     public string? LastPageDescription { get; set; }
+
+    public string? GiftLink { get; set; }
 }

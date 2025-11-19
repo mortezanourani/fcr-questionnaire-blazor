@@ -27,11 +27,12 @@
 
         AppTitle = generalInformation!.ApplicationTitle;
         LastPageDescription = generalInformation!.LastPageDescription;
-        GiftLink = generalInformation!.Id.ToString();
+        GiftLink = generalInformation!.GiftLink;
     }
 
     protected void DownloadGift()
     {
+        NavigationManager.NavigateTo(GiftLink!);
         // Download process
     }
 }

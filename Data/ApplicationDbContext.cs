@@ -30,7 +30,8 @@ namespace FCR.Data
                     Id = Guid.NewGuid(),
                     ApplicationTitle = string.Empty,
                     FirstPageDescription = string.Empty,
-                    LastPageDescription = string.Empty
+                    LastPageDescription = string.Empty,
+                    GiftLink = string.Empty,
                 }
             );
         }
