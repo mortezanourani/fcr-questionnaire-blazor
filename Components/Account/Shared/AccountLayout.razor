@@ -1,10 +1,9 @@
 ﻿@inherits LayoutComponentBase
-@layout FCR.Components.Layout.MainLayout
 @inject NavigationManager NavigationManager
 
 @if (HttpContext is null)
 {
-    <p>Loading...</p>
+    <Loading />
 }
 else
 {

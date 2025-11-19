@@ -1,0 +1,94 @@
+﻿@page "/Dashboard"
+
+<PageTitle>اطلاعات عمومی پرشسنامه</PageTitle>
+
+<header class="page-header">
+    <h3 class="page-title">پنل کاربری</h3>
+</header>
+
+<div class="content container">
+
+    @if (Information is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <div class="row">
+            <div class="form-wrapper">
+                <div class="form-row">
+                    <label class="form-label">اطلاعات اصلی پرشسنامه</label>
+                </div>
+                <EditForm method="post" Model="Information" OnValidSubmit="UpdateGeneralInformation" FormName="edit" Enhance>
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger" role="alert" />
+                    <input type="hidden" name="Information.Id" value="@Information.Id" />
+                    <div class="form-row">
+                        <label for="applicationtitle" class="form-label">عنوان اپلیکیش پرسشنامه:</label>
+                        <InputText id="applicationtitle" @bind-Value="Information.ApplicationTitle" class="form-control" />
+                        <ValidationMessage For="() => Information.ApplicationTitle" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <label for="firstpagedescription" class="form-label">متن صفحه اول:</label>
+                        <InputText id="firstpagedescription" @bind-Value="Information.FirstPageDescription" class="form-control" />
+                        <ValidationMessage For="() => Information.FirstPageDescription" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <label for="lastpagedescription" class="form-label">متن صفحه تقدیر و تشکر:</label>
+                        <InputText id="lastpagedescription" @bind-Value="Information.LastPageDescription" class="form-control" />
+                        <ValidationMessage For="() => Information.LastPageDescription" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <label for="giftlink" class="form-label">لینک هدیه:</label>
+                        <InputText id="giftlink" @bind-Value="Information.GiftLink" class="form-control" />
+                        <ValidationMessage For="() => Information.GiftLink" class="text-danger" />
+                    </div>
+                    <div class="form-row">
+                        <button type="submit">ثبت</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private GeneralInformation? Information { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        Information ??= await context.GeneralInformation
+            .FirstOrDefaultAsync();
+
+        if (Information is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task UpdateGeneralInformation()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        context.Attach(Information!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (Information is null)
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/Dashboard");
+    }
+}
