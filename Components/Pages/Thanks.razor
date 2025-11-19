@@ -13,8 +13,6 @@
 </div>
 
 @code {
-    private bool InProgress = false;
-
     private string? AppTitle { get; set; }
     private string? LastPageDescription { get; set; }
     private string? GiftLink { get; set; }
@@ -32,10 +30,8 @@
         GiftLink = generalInformation!.Id.ToString();
     }
 
-    protected async Task DownloadGift()
+    protected void DownloadGift()
     {
-        using var context = DbContextFactory.CreateDbContext();
-
         // Download process
     }
 }
