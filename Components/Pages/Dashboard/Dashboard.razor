@@ -30,12 +30,12 @@
                     </div>
                     <div class="form-row">
                         <label for="firstpagedescription" class="form-label">متن صفحه اول:</label>
-                        <InputText id="firstpagedescription" @bind-Value="Information.FirstPageDescription" class="form-control" />
+                        <InputTextArea id="firstpagedescription" @bind-Value="Information.FirstPageDescription" class="form-control" />
                         <ValidationMessage For="() => Information.FirstPageDescription" class="text-danger" />
                     </div>
                     <div class="form-row">
                         <label for="lastpagedescription" class="form-label">متن صفحه تقدیر و تشکر:</label>
-                        <InputText id="lastpagedescription" @bind-Value="Information.LastPageDescription" class="form-control" />
+                        <InputTextArea id="lastpagedescription" @bind-Value="Information.LastPageDescription" class="form-control" />
                         <ValidationMessage For="() => Information.LastPageDescription" class="text-danger" />
                     </div>
                     <div class="form-row">

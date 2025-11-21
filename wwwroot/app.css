@@ -1,11 +1,11 @@
 @import url("../fontiran.css");
 
 :root {
-    --primary-color: #823794;
-    --secondary-color: #a47dab;
-    --light-color: whitesmoke;
-    --black-color: #36382e;
-    --card-bg-color: #d6befa;
+    --primary-color: #018876;
+    --secondary-color: #004146;
+    --light-color: #f0ede5;
+    --black-color: #333;
+    --card-bg-color: #e1dee6;
 }
 
 html, body {
