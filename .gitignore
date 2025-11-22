@@ -187,6 +187,8 @@ _pkginfo.txt
 
 # Others
 ClientBin/
+PublishProfiles/
+.config/
 ~$*
 *~
 *.dbmdl
