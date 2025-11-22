@@ -15,5 +15,6 @@ public enum ScaleType
 {
     Options = 0,
     Number = 1,
-    Text = 2
+    Text = 2,
+    Checks = 3
 }

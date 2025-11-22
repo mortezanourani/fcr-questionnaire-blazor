@@ -27,7 +27,7 @@
                 <PropertyColumn Title="نوع پاسخ" Property="@(scale => scale.Type.ToString())" />
                 <PropertyColumn Title="تعداد گزینه" Property="@(scale => scale.Options!.Count)" />
                 <TemplateColumn Title="">
-                    @if (context.Type.ToString() == "Options")
+                    @if (context.Type == ScaleType.Options || context.Type == ScaleType.Checks)
                     {
                         <NavLink class="small-link" href="@($"/Dashboard/Scales/{context.Id}/Options")">گزینه ها</NavLink>
                     }

@@ -48,13 +48,9 @@
     }
 }
 
-        .question-card .question-answer ::deep input[type="radio"] {
+        .question-card .question-answer ::deep input[type="radio"],
+        .question-card .question-answer ::deep input[type="checkbox"] {
             display: none;
-        }
-
-        .question-card .question-answer input:checked + .question-options-item {
-            color: var(--primary-color);
-            font-weight: 600;
         }
 
         .question-card .question-answer .question-options-item {
@@ -66,11 +62,21 @@
             font-weight: 400;
             flex-grow: 1;
             align-content: center;
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-image: url('/check.svg');
         }
 
             .question-card .question-answer .question-options-item:last-child {
                 border: none;
             }
+
+        .question-card .question-answer input:checked + .question-options-item {
+            color: var(--primary-color);
+            font-weight: 500;
+            /*background-color: var(--card-bg-color);*/
+            background-image: url('/checked.svg');
+        }
 
         .question-card .question-answer .input-answer {
             flex: 1;
@@ -95,6 +101,15 @@
             align-content: center;
             box-sizing: border-box;
         }
+
+            .question-card .question-answer .input-answer .input-wrapper.checkboxes {
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: stretch;
+                border: 1px solid lightgray;
+            }
 
             .question-card .question-answer .input-answer .input-wrapper ::deep input {
                 width: 100%;
