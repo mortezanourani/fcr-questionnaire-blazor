@@ -2,6 +2,7 @@
 using FCR.Components;
 using FCR.Components.Account;
 using FCR.Data;
+using FCR.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,8 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+builder.Services.AddScoped<IExcelExportService, ExcelExportService>();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -60,5 +63,20 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+
+app.MapGet("/Dashboard/Export", (IExcelExportService excel) =>
+{
+    var data = new[]
+    {
+        new { Name = "Morteza", Age = 38 },
+        new { Name = "Helia", Age = 37 }
+    };
+
+    var bytes = excel.Export(data, "We");
+
+    return Results.File(bytes,
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "We.xlsx");
+});
 
 app.Run();
