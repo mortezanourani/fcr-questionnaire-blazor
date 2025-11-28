@@ -14,13 +14,14 @@ else
         <div class="question-answer">
             @if (question.Scale.Type == ScaleType.Options)
             {
-                <InputRadioGroup @bind-value="tempOption">
+                <InputRadioGroup TValue="int?" @bind-value="tempOption">
                 <div class="input-answer">
                     <div class="input-wrapper checkboxes">
                         @foreach (Option option in question.Scale!.Options!.OrderBy(o => o.Score))
                         {
                             <InputRadio 
                                 id="@option.Id" 
+                                TValue="int?"
                                 value="option.Score" 
                                 @onclick="HandleQuestionAnswer" />
                             <label for="@option.Id" class="question-options-item">
