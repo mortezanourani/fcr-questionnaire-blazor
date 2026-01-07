@@ -8,7 +8,6 @@
     .questionnaire-description-card .questionnaire-description {
         padding: 24px 16px;
         border-radius: 8px;
-        line-height: 2.1;
         color: var(--black-color);
         background: rgba(255, 255, 255, .6);
         margin-bottom: 24px;

@@ -4,11 +4,25 @@
 
 @rendermode InteractiveServer
 
+<div class="background"></div>
+
 <header class="main-header">
     <h4 class="header-title">@AppTitle</h4>
 </header>
 
-<p>@FirstPageDescription</p>
+@if (PageDescription is null)
+{
+    <Loading />
+}
+else
+{
+    <div>
+        @foreach (string Paragraph in PageDescription!)
+        {
+            <p class="justified">@Paragraph</p>
+        }
+    </div>
+}
 
 <div class="button-wrapper">
     <button class="light-button" @onclick="StartProgress">شروع پاسخگویی</button>
@@ -17,6 +31,7 @@
 @code {
     private string? AppTitle { get; set; }
     private string? FirstPageDescription { get; set; }
+    private string[]? PageDescription { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,6 +43,8 @@
 
         AppTitle = generalInformation!.ApplicationTitle;
         FirstPageDescription = generalInformation!.FirstPageDescription;
+
+        PageDescription = FirstPageDescription?.Split("\n");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

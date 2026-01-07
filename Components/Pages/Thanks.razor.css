@@ -1,4 +1,17 @@
-﻿.main-header {
+﻿.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background-image: url("/home_background.jpg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.main-header {
     position: relative;
     align-content: center;
     height: 64px;

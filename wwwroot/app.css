@@ -93,6 +93,12 @@ p {
     font-size: 14px;
 }
 
+    p.justified {
+        text-align: justify;
+        margin: 0;
+        line-height: 2;
+    }
+
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }

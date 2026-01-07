@@ -2,21 +2,39 @@
 
 <PageTitle>@AppTitle</PageTitle>
 
+<div class="background"></div>
+
 <header class="main-header">
     <h4 class="header-title">@AppTitle</h4>
 </header>
 
-<p>@LastPageDescription</p>
+@if (PageDescription is null)
+{
+    <Loading />
+}
+else
+{
+    <div>
+        @foreach (string Paragraph in PageDescription)
+        {
+            <p class="justified">@Paragraph</p>
+        }
+    </div>
+}
 
-<div class="button-wrapper">
-    <a href="@GiftLink">
-        <button class="light-button">دانلود هدیه</button>
-    </a>
-</div>
+@if (! string.IsNullOrWhiteSpace(GiftLink))
+{
+    <div class="button-wrapper">
+        <a href="@GiftLink">
+            <button class="light-button">دانلود هدیه</button>
+        </a>
+    </div>
+}
 
 @code {
     private string? AppTitle { get; set; }
     private string? LastPageDescription { get; set; }
+    private string[]? PageDescription { get; set; }
     private string? GiftLink { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -29,6 +47,7 @@
 
         AppTitle = generalInformation!.ApplicationTitle;
         LastPageDescription = generalInformation!.LastPageDescription;
+        PageDescription = LastPageDescription?.Split("\n");
         GiftLink = generalInformation!.GiftLink;
     }
 

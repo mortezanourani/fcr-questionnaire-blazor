@@ -15,6 +15,7 @@ body * {
     justify-content: space-between;
     align-items: stretch;
     gap: 16px;
+    z-index: 1;
 }
 
     .container .content {

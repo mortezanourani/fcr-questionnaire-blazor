@@ -5,9 +5,12 @@
 else
 {
     <div class="questionnaire-description-card">
-        <p class="questionnaire-description">
-            @Questionnaire.Description
-        </p>
+        <div class="questionnaire-description">
+            @foreach (string Paragraph in Questionnaire.Description!.Split("\n"))
+            {
+                <p class="justified">@Paragraph</p>
+            }
+        </div>
         <button class="light-button" @onclick="HandleContinue">ادامه</button>
     </div>
 }
