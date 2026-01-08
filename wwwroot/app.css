@@ -1,11 +1,11 @@
 @import url("../fontiran.css");
 
 :root {
-    --primary-color: #018876;
-    --secondary-color: #004146;
+    --primary-color: skyblue;
+    --secondary-color: steelblue;
     --light-color: #f0ede5;
     --black-color: #333;
-    --card-bg-color: #e1dee6;
+    --card-bg-color: rgba(50, 120, 255, .05);
 }
 
 html, body {
@@ -13,7 +13,7 @@ html, body {
     padding: 0;
     direction: rtl;
     background-color: var(--primary-color);
-    color: var(--light-color);
+    color: var(--black-color);
 }
 
     body * {
@@ -58,7 +58,7 @@ button {
     height: 45px;
     padding: 8px 32px;
     border-radius: 45px;
-    background: var(--primary-color);
+    background: var(--secondary-color);
     color: var(--light-color);
     font-size: 14px;
     font-weight: 500;
@@ -67,13 +67,13 @@ button {
 }
 
     button:hover {
-        background: var(--light-color);
-        color: var(--primary-color);
+        background: var(--primary-color);
+        color: var(--light-color);
     }
 
 button.light-button {
     background: var(--light-color);
-    color: var(--primary-color);
+    color: var(--secondary-color);
 }
 
     button.light-button:hover {

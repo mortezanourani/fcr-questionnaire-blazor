@@ -5,27 +5,28 @@
 @rendermode InteractiveServer
 
 <div class="background"></div>
+<div class="wrapper">
+    <header class="main-header">
+        <h4 class="header-title">@AppTitle</h4>
+    </header>
 
-<header class="main-header">
-    <h4 class="header-title">@AppTitle</h4>
-</header>
+    @if (PageDescription is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <div>
+            @foreach (string Paragraph in PageDescription!)
+            {
+                <p class="justified">@Paragraph</p>
+            }
+        </div>
+    }
 
-@if (PageDescription is null)
-{
-    <Loading />
-}
-else
-{
-    <div>
-        @foreach (string Paragraph in PageDescription!)
-        {
-            <p class="justified">@Paragraph</p>
-        }
+    <div class="button-wrapper">
+        <button class="button" @onclick="StartProgress">شروع پاسخگویی</button>
     </div>
-}
-
-<div class="button-wrapper">
-    <button class="light-button" @onclick="StartProgress">شروع پاسخگویی</button>
 </div>
 
 @code {

@@ -19,7 +19,7 @@ else
                 </button>
             }
         }
-        <h4 class="header-title">@AppTitle</h4>
+        <h4 class="header-title">بخش @questionnaire?.Priority</h4>
     </header>
     @if (questionnaire is null || question is null || participant is null)
     {
@@ -28,7 +28,7 @@ else
     else
     {
         <div class="question-wrapper">
-            <h5 class="question-number">بخش @questionnaire.Priority@*: @questionnaire.Title*@</h5>
+            @* <h5 class="question-number">بخش @questionnaire.Priority: @questionnaire.Title</h5> *@
             @if (ShouldDisplayDescription)
             {
                 <QuestionnaireDescriptionCard QuestionnaireId="@questionnaire.Id" OnContinue="HandleContinue" />

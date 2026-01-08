@@ -27,7 +27,7 @@
 
         .question-card .question .question-clarification {
             margin-top: 16px;
-            color: darkgray;
+            color: var(--secondary-color);
         }
 
     .question-card .question-answer {
@@ -72,9 +72,10 @@
             }
 
         .question-card .question-answer input:checked + .question-options-item {
-            color: var(--primary-color);
+            color: var(--secondary-color);
             font-weight: 500;
-            /*background-color: var(--card-bg-color);*/
+            /*background-color: rgba(50, 120, 255, .05);*/
+            background-color: var(--card-bg-color);
             background-image: url('/checked.svg');
         }
 
@@ -120,5 +121,6 @@
                 text-align: center;
                 border-radius: 30px;
                 border: 2px solid var(--secondary-color);
+                background-color: var(--card-bg-color);
                 box-sizing: border-box;
             }

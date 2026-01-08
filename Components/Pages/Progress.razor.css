@@ -11,6 +11,7 @@
     .main-header .header-title {
         font-size: 15px;
         text-align: center;
+        color: var(--light-color);
     }
 
     .main-header button {
@@ -22,6 +23,7 @@
         height: 24px;
         margin-top: -12px;
         z-index: 99;
+        background-color: var(--primary-color);
     }
 
         .main-header button:hover {
