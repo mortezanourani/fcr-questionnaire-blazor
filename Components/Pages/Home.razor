@@ -6,62 +6,89 @@
 
 <div class="background"></div>
 <div class="wrapper">
-    <header class="main-header">
-        <h4 class="header-title">@AppTitle</h4>
-    </header>
-
-    @if (PageDescription is null)
+    @if (isLoaded is false)
     {
         <Loading />
     }
     else
     {
+        <header class="main-header">
+            <h4 class="header-title">@AppTitle!</h4>
+        </header>
         <div>
             @foreach (string Paragraph in PageDescription!)
             {
                 <p class="justified">@Paragraph</p>
             }
         </div>
+        <div class="button-wrapper">
+            <button class="button" @onclick="StartProgress">شروع پاسخگویی</button>
+        </div>
     }
-
-    <div class="button-wrapper">
-        <button class="button" @onclick="StartProgress">شروع پاسخگویی</button>
-    </div>
 </div>
 
 @code {
     private string? AppTitle { get; set; }
-    private string? FirstPageDescription { get; set; }
     private string[]? PageDescription { get; set; }
+
+    private bool isExist = false;
+    private bool isLoaded = false;
+    private bool isThereError = false;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
-        using var context = DbContextFactory.CreateDbContext();
-        var generalInformation = await context.GeneralInformation
-            .FirstOrDefaultAsync();
-
-        AppTitle = generalInformation!.ApplicationTitle;
-        FirstPageDescription = generalInformation!.FirstPageDescription;
-
-        PageDescription = FirstPageDescription?.Split("\n");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            using var context = DbContextFactory.CreateDbContext();
-            var localId = await localStorage.GetItemAsync<string>("participantId");
-            if (localId is not null)
+            isExist = await checkIfExist();
+            if (isExist is true)
             {
                 NavigationManager.NavigateTo("/Progress");
                 return;
             }
-            firstRender = false;
-            StateHasChanged();
+            else
+            {
+                firstRender = false;
+                isLoaded = await loadPageData();
+                StateHasChanged();
+            }
         }
+    }
+
+    private async Task<bool> checkIfExist()
+    {
+        var localId = await localStorage.GetItemAsync<string>("participantId");
+        if(localId is not null)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private async Task<bool> loadPageData()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        try
+        {
+            var generalInformation = await context.GeneralInformation
+                    .FirstOrDefaultAsync();
+            if (generalInformation is not null)
+            {
+                AppTitle = generalInformation!.ApplicationTitle;
+                var firstPageDescription = generalInformation!.FirstPageDescription;
+                PageDescription = firstPageDescription?.Split("\n");
+            }
+            isThereError = false;
+        }
+        catch
+        {
+            isThereError = true;
+        }
+        return true;
     }
 
     private async Task StartProgress()
