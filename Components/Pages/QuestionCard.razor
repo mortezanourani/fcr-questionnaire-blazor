@@ -69,7 +69,7 @@ else
 
 @code {
     [Parameter]
-    public Guid QuestionId { get; set; }
+    public Guid? QuestionId { get; set; }
 
     [Parameter]
     public Guid ParticipantId { get; set; }
@@ -192,11 +192,7 @@ else
         {
             await context.SaveChangesAsync();
 
-            var responsesCount = await context.Responses
-                .Where(r => r.ParticipantId == ParticipantId)
-                .CountAsync();
-
-            await OnAnswered.InvokeAsync(responsesCount);
+            await OnAnswered.InvokeAsync();
         }
         catch
         {

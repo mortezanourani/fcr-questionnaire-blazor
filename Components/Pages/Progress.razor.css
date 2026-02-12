@@ -37,6 +37,7 @@
     justify-content: space-between;
     align-content: stretch;
     gap: 16px;
+    position: relative;
 }
 
     .question-wrapper .question-number {

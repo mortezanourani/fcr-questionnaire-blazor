@@ -2,161 +2,204 @@
 
 @rendermode InteractiveServer
 
-@if (participant is null || Questionnaires is null || Questions is null)
+@if (isLoaded is false)
 {
     <Loading />
 }
 else
 {
     <header class="main-header">
-        @{
-            if (!(question!.Position <= 1 && questionnaire!.Priority <= 1) 
-                &&
-                !ShouldDisplayDescription)
-            {
-                <button @onclick="PreviousQuestion">
-                    <img src="/back.svg" />
-                </button>
-            }
+        @if (isDescription is false || alreadyDescribed is true)
+        {
+        <button @onclick="PreviousQuestion">
+            <img src="/back.svg" />
+        </button>
         }
-        <h4 class="header-title">بخش @questionnaire?.Priority</h4>
+
+        <h4 class="header-title">بخش @SectionNumber</h4>
     </header>
-    @if (questionnaire is null || question is null || participant is null)
-    {
-        <Loading />
-    }
-    else
-    {
-        <div class="question-wrapper">
-            @* <h5 class="question-number">بخش @questionnaire.Priority: @questionnaire.Title</h5> *@
-            @if (ShouldDisplayDescription)
-            {
-                <QuestionnaireDescriptionCard QuestionnaireId="@questionnaire.Id" OnContinue="HandleContinue" />
-            }
-            else
-            {
-                <QuestionCard QuestionId="question.Id" ParticipantId="participant.Id" OnAnswered="HandleAnswer" />
-            }
-        </div>
-        <footer>
-            <ProgressBar ResponsesCount="@ResponsesCount" />
-        </footer>
-    }
+    <div class="question-wrapper">
+        @if (isDescription is true && alreadyDescribed is false)
+        {
+            <QuestionnaireDescriptionCard QuestionnaireId="questionnaire!.Id" OnContinue="HandleContinue" />
+        }
+        else
+        {
+            <QuestionCard QuestionId="QuestionId" ParticipantId="participant!.Id" OnAnswered="HandleAnswer" />
+        }
+    </div>
+    <footer>
+        <ProgressBar ResponsesCount="@ResponsesCount" />
+    </footer>
 }
 
 @code {
-    private string? AppTitle { get; set; }
-    
     private Participant? participant;
 
     private List<Questionnaire>? Questionnaires;
+    private List<Question>? Questions;
+
+    private Guid? QuestionId;
+    private Question? question;
     private Questionnaire? questionnaire;
 
-    private List<Question>? Questions;
-    private Question? question;
-
+    private int? SectionNumber;
     private int ResponsesCount = 0;
 
     private bool ShouldDisplayDescription = false;
 
+    private bool isLoaded = false;
+    private bool isDescription = false;
+    private bool alreadyDescribed = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        using var context = DbContextFactory.CreateDbContext();
+
         if (firstRender)
         {
-            using var context = DbContextFactory.CreateDbContext();
-            var generalInformation = await context.GeneralInformation
-                .FirstOrDefaultAsync();
-            AppTitle = generalInformation!.ApplicationTitle;
-
-            var localId = await localStorage.GetItemAsync<string>("participantId");
-
-            if (localId is null)
+            var participantId = await getParticipantId();
+            if (participantId is null)
             {
                 NavigationManager.NavigateTo("/", true);
+                return;
             }
 
             participant ??= await context.Participants
-                .FirstOrDefaultAsync(p => p.Id.ToString() == localId);
-            firstRender = false;
-
-            ResponsesCount = await context.Responses
-                .Where(r => r.ParticipantId == participant!.Id)
-                .CountAsync();
-
-            var lastQuestion = context.Questions
-                .Include(q => q.Questionnaire)
-                .OrderBy(q => q.Position)
-                .ToList()
-                .OrderBy(q => q.Questionnaire.Priority)
-                .ToList()
-                .Skip(ResponsesCount)
-                .FirstOrDefault();
-
-            if (lastQuestion is not null)
+                .FirstOrDefaultAsync(p => p.Id.ToString() == participantId);
+            if (participant is null)
             {
-                Questionnaires = await context.Questionnaires
-                    .Include(q => q.Questions)
-                    .OrderBy(q => q.Priority)
-                    .ToListAsync();
-
-                questionnaire = Questionnaires!.FirstOrDefault(q => q.Id == lastQuestion.QuestionnaireId);
-
-                Questions = await context.Questions
-                    .Include(q => q.Scale)
-                        .ThenInclude(s => s.Options)
-                    .Where(q => q.QuestionnaireId == questionnaire!.Id)
-                    .OrderBy(q => q.Position)
-                    .ToListAsync();
-
-                question = Questions!.FirstOrDefault(q => q.Id == lastQuestion.Id);
-
-                if(question!.Position == 1)
-                {
-                    ShouldDisplayDescription = true;
-                }
-            }
-
-            StateHasChanged();
-        }
-    }
-
-    private async Task NextQuestion()
-    {
-        var currentQuestion = question!.Position;
-        if (currentQuestion < Questions!.Count())
-        {
-            question = Questions!.FirstOrDefault(q => q.Position == currentQuestion + 1);
-        }
-        else
-        {
-            var currentQuestionnaire = questionnaire!.Priority;
-            questionnaire = Questionnaires!
-                .FirstOrDefault(q => q.Priority == currentQuestionnaire + 1);
-
-            if (questionnaire is null)
-            {
-                await localStorage.RemoveItemAsync("participantId");
-                NavigationManager.NavigateTo("/Thanks", true);
+                await localStorage.ClearAsync();
+                NavigationManager.NavigateTo("/", true);
                 return;
             }
-            else
-            {
-                using var context = DbContextFactory.CreateDbContext();
-                Questions = await context.Questions
-                    .Include(q => q.Scale)
-                        .ThenInclude(s => s.Options)
-                    .Where(q => q.QuestionnaireId == questionnaire.Id)
-                    .OrderBy(q => q.Position)
-                    .ToListAsync();
 
-                question = Questions.FirstOrDefault();
-
-                ShouldDisplayDescription = true;
-            }
+            firstRender = false;
         }
+
+        // Load Responses List
+        var responsesList = await getParticipantResponses();
+
+        // Finish if Complete Then Redirect to Thanks
+        var isCompleted = await checkIfCompleted();
+        if (isCompleted)
+        {
+            await FinalizeQuestionnaire();
+            return;
+        }
+
+        // Continue if it is not Complete
+        QuestionId = await getNextQuestionId(responsesList!);
+        if (QuestionId is null)
+        {
+            await FinalizeQuestionnaire();
+            return;
+        }
+
+        // Display First Question After Last Response
+        isDescription = await checkIfIsDescription(QuestionId);
+        if (isDescription is true)
+        {
+            questionnaire = await getQuestionnaire(QuestionId);
+        }
+
+        isLoaded = true;
 
         StateHasChanged();
     }
+
+    private async Task<string?> getParticipantId()
+    {
+        var participantId = await localStorage.GetItemAsync<string>("participantId");
+        return participantId;
+    }
+
+    private async Task<List<Response>?> getParticipantResponses()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var responses = await context.Responses
+            .Include(m => m.Question)
+                .ThenInclude(m => m.Questionnaire)
+            .Where(m => m.ParticipantId == participant!.Id)
+            .OrderBy(m => m.Question.Position)
+            .OrderBy(m => m.Question.Questionnaire.Priority)
+            .ToListAsync();
+        ResponsesCount = responses.Count();
+        return responses;
+    }
+
+    private async Task<bool> checkIfCompleted()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var questionsCount = await context.Questions
+            .CountAsync();
+        return ResponsesCount >= questionsCount;
+    }
+
+    private async Task<Guid?> getNextQuestionId(List<Response>? responses)
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var lastResponse = responses!.Count == 0 ? null : responses!.Last();
+        var questionnairePriority = lastResponse is not null
+            ? lastResponse.Question.Questionnaire.Priority
+            : 1;
+        var questionPosition = lastResponse is not null
+            ? lastResponse.Question.Position
+            : 0;
+        var nextQuestion = await context.Questions
+            .Include(m => m.Questionnaire)
+            .Where(m => m.Questionnaire.Priority == questionnairePriority)
+            .FirstOrDefaultAsync(m => m.Position == questionPosition + 1);
+        if (nextQuestion is not null)
+        {
+            SectionNumber = nextQuestion.Questionnaire.Priority;
+            return nextQuestion.Id;
+        }
+        var questionnairesCount = await context.Questionnaires.CountAsync();
+        if (questionnairePriority >= questionnairesCount)
+        {
+            return null;
+        }
+        questionnairePriority += 1;
+        nextQuestion = await context.Questions
+            .Include(m => m.Questionnaire)
+            .Where(m => m.Questionnaire.Priority == questionnairePriority)
+            .FirstOrDefaultAsync(m => m.Position == 1);
+        if (nextQuestion is not null)
+        {
+            SectionNumber = nextQuestion.Questionnaire.Priority;
+            return nextQuestion.Id;
+        }
+        return null;
+    }
+
+    private async Task<bool> checkIfIsDescription(Guid? questionId)
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var question = await context.Questions
+            .FirstOrDefaultAsync(m => m.Id == questionId);
+        var position = question!.Position;
+        return position == 1;
+    }
+
+    private async Task<Questionnaire?> getQuestionnaire(Guid? questionId)
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var question = await context.Questions
+            .Include(m => m.Questionnaire)
+            .FirstOrDefaultAsync(m => m.Id == questionId);
+        return question!.Questionnaire;
+    }
+
+    private async Task FinalizeQuestionnaire()
+    {
+        await localStorage.ClearAsync();
+        NavigationManager.NavigateTo("/Thanks", true);
+        return;
+    }
+
+
+
 
     private async Task PreviousQuestion()
     {
@@ -188,17 +231,16 @@ else
         StateHasChanged();
     }
 
-    private async Task HandleAnswer(int responsesCount)
+    private async Task HandleAnswer()
     {
-        await NextQuestion();
-
-        ResponsesCount = responsesCount;
+        alreadyDescribed = false;
+        isLoaded = false;
+        StateHasChanged();
     }
 
-    private void HandleContinue(bool ShouldDisplay)
+    private void HandleContinue()
     {
-        ShouldDisplayDescription = ShouldDisplay;
-
+        alreadyDescribed = true;
         StateHasChanged();
     }
 }

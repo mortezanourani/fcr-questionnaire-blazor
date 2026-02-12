@@ -31,7 +31,6 @@
     private string? AppTitle { get; set; }
     private string[]? PageDescription { get; set; }
 
-    private bool isExist = false;
     private bool isLoaded = false;
     private bool isThereError = false;
 
@@ -44,7 +43,7 @@
     {
         if (firstRender)
         {
-            isExist = await checkIfExist();
+            var isExist = await checkIfExist();
             if (isExist is true)
             {
                 NavigationManager.NavigateTo("/Progress");
