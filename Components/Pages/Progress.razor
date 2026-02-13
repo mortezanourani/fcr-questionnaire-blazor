@@ -9,13 +9,12 @@
 else
 {
     <header class="main-header">
-        @if (isDescription is false || alreadyDescribed is true)
+        @if (firstQuestion is false)
         {
-        <button @onclick="PreviousQuestion">
-            <img src="/back.svg" />
-        </button>
+            <button @onclick="PreviousQuestion">
+                <img src="/back.svg" />
+            </button>
         }
-
         <h4 class="header-title">بخش @SectionNumber</h4>
     </header>
     <div class="question-wrapper">
@@ -46,11 +45,14 @@ else
     private int? SectionNumber;
     private int ResponsesCount = 0;
 
-    private bool ShouldDisplayDescription = false;
+    private bool firstQuestion = false;
+    private bool shouldRender = true;
 
     private bool isLoaded = false;
     private bool isDescription = false;
     private bool alreadyDescribed = false;
+
+    private bool isPrevious = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -77,35 +79,48 @@ else
             firstRender = false;
         }
 
-        // Load Responses List
-        var responsesList = await getParticipantResponses();
-
-        // Finish if Complete Then Redirect to Thanks
-        var isCompleted = await checkIfCompleted();
-        if (isCompleted)
+        if (shouldRender)
         {
-            await FinalizeQuestionnaire();
-            return;
+            // Load Responses List
+            var responsesList = await getParticipantResponses();
+
+            // Finish if Complete Then Redirect to Thanks
+            var isCompleted = await checkIfCompleted();
+            if (isCompleted)
+            {
+                await FinalizeQuestionnaire();
+                return;
+            }
+
+            // Continue if it is not Complete
+            if (isPrevious)
+            {
+                QuestionId = await getPreviusQuestionId(QuestionId);
+                alreadyDescribed = true;
+                isPrevious = false;
+            }
+            else
+            {
+                QuestionId = await getNextQuestionId(responsesList!);
+            }
+            if (QuestionId is null)
+            {
+                await FinalizeQuestionnaire();
+                return;
+            }
+
+            // Display First Question After Last Response
+            isDescription = await checkIfIsDescription(QuestionId);
+            if (isDescription is true)
+            {
+                questionnaire = await getQuestionnaire(QuestionId);
+            }
+
+            isLoaded = true;
+            shouldRender = false;
+
+            StateHasChanged();
         }
-
-        // Continue if it is not Complete
-        QuestionId = await getNextQuestionId(responsesList!);
-        if (QuestionId is null)
-        {
-            await FinalizeQuestionnaire();
-            return;
-        }
-
-        // Display First Question After Last Response
-        isDescription = await checkIfIsDescription(QuestionId);
-        if (isDescription is true)
-        {
-            questionnaire = await getQuestionnaire(QuestionId);
-        }
-
-        isLoaded = true;
-
-        StateHasChanged();
     }
 
     private async Task<string?> getParticipantId()
@@ -136,9 +151,38 @@ else
         return ResponsesCount >= questionsCount;
     }
 
+    private async Task<Guid?> getPreviusQuestionId(Guid? currentQuestionId)
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var currentQuestion = await context.Questions
+            .Include(m => m.Questionnaire)
+            .FirstOrDefaultAsync(m => m.Id == currentQuestionId);
+        var questionPosition = currentQuestion!.Position;
+        var questionnairePriority = currentQuestion!.Questionnaire.Priority;
+        if(questionPosition > 1)
+        {
+            questionPosition -= 1;
+        }
+        else
+        {
+            questionnairePriority -= 1;
+            questionPosition = await context.Questions
+                .Include(m => m.Questionnaire)
+                .Where(m => m.Questionnaire.Priority == questionnairePriority)
+                .MaxAsync(m => m.Position);
+        }
+        var previousQuestion = await context.Questions
+            .Include(m => m.Questionnaire)
+            .Where(m => m.Questionnaire.Priority == questionnairePriority)
+            .FirstOrDefaultAsync(m => m.Position == questionPosition);
+        firstQuestion = (questionPosition == 1 && questionnairePriority == 1);
+        return previousQuestion!.Id;
+    }
+
     private async Task<Guid?> getNextQuestionId(List<Response>? responses)
     {
         using var context = DbContextFactory.CreateDbContext();
+        firstQuestion = responses!.Count == 0;
         var lastResponse = responses!.Count == 0 ? null : responses!.Last();
         var questionnairePriority = lastResponse is not null
             ? lastResponse.Question.Questionnaire.Priority
@@ -155,15 +199,9 @@ else
             SectionNumber = nextQuestion.Questionnaire.Priority;
             return nextQuestion.Id;
         }
-        var questionnairesCount = await context.Questionnaires.CountAsync();
-        if (questionnairePriority >= questionnairesCount)
-        {
-            return null;
-        }
-        questionnairePriority += 1;
         nextQuestion = await context.Questions
             .Include(m => m.Questionnaire)
-            .Where(m => m.Questionnaire.Priority == questionnairePriority)
+            .Where(m => m.Questionnaire.Priority == questionnairePriority + 1)
             .FirstOrDefaultAsync(m => m.Position == 1);
         if (nextQuestion is not null)
         {
@@ -198,36 +236,11 @@ else
         return;
     }
 
-
-
-
     private async Task PreviousQuestion()
     {
-        var currentQuestion = question!.Position;
-        if (currentQuestion > 1)
-        {
-            question = Questions!.FirstOrDefault(q => q.Position == currentQuestion - 1);
-        }
-        else
-        {
-            var currentQuestionnaire = questionnaire!.Priority;
-            questionnaire = Questionnaires!
-                .FirstOrDefault(q => q.Priority == currentQuestionnaire - 1);
-
-            if (questionnaire is not null)
-            {
-                using var context = DbContextFactory.CreateDbContext();
-                Questions = await context.Questions
-                    .Include(q => q.Scale)
-                        .ThenInclude(s => s.Options)
-                    .Where(q => q.QuestionnaireId == questionnaire.Id)
-                    .OrderBy(q => q.Position)
-                    .ToListAsync();
-
-                question = Questions.LastOrDefault();
-            }
-        }
-
+        isLoaded = false;
+        isPrevious = true;
+        shouldRender = true;
         StateHasChanged();
     }
 
@@ -235,12 +248,14 @@ else
     {
         alreadyDescribed = false;
         isLoaded = false;
+        shouldRender = true;
         StateHasChanged();
     }
 
     private void HandleContinue()
     {
         alreadyDescribed = true;
+        shouldRender = true;
         StateHasChanged();
     }
 }
