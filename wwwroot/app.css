@@ -99,6 +99,10 @@ p {
         line-height: 2;
     }
 
+.m-0 {
+    margin: 0;
+}
+
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }

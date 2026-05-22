@@ -1,0 +1,73 @@
+﻿@page "/Dashboard/Participants/Answers/{ParticipantId:guid}"
+
+<header class="page-header">
+    <div class="container">
+        <h3 class="page-title">نمونه های شرکت کننده</h3>
+    </div>
+</header>
+
+<div class="content container">
+    @if (Responses is null)
+    {
+        <h4>در حال بازگزاری لیست</h4>
+    }
+    else
+    {
+        <QuickGrid Items="Responses.AsQueryable()">
+            <PropertyColumn Title="گویه" Property="@(response => response.Question.Text)" />
+            <TemplateColumn>
+                @if (string.IsNullOrEmpty(context.Value))
+                {
+                    <p class="m-0">Missing</p>
+                }
+                else
+                {
+                    @if (context.Question.Scale.Type == ScaleType.Text || context.Question.Scale.Type == ScaleType.Number)
+                    {
+                        <p class="m-0">@context.Value</p>
+                    }
+                    else if (context.Question.Scale.Type == ScaleType.Options)
+                    {
+                        <p class="m-0">@context.Question.Scale.Options.FirstOrDefault(o => o.Score.ToString() == context.Value)?.Label</p>
+                    }
+                    else
+                    {
+                        <p class="m-0">
+                        @foreach (string val in context.Value.Split(","))
+                        {
+                            @($"{context.Question.Scale.Options.FirstOrDefault(o => o.Score.ToString() == val)?.Label} - ")
+                        }
+                        </p>
+                    }
+                }
+
+            </TemplateColumn>
+            <TemplateColumn><p></p></TemplateColumn>
+        </QuickGrid>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid? ParticipantId { get; set; }
+
+    private List<Response>? Responses { get; set; }
+
+    private int res;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        Responses = context.Responses
+            .Include(r => r.Question)
+                .ThenInclude(q => q.Scale)
+                    .ThenInclude(s => s.Options)
+            .Include(r => r.Question)
+                .ThenInclude(q => q.Questionnaire)
+            .Where(r => r.ParticipantId == ParticipantId)
+            .OrderBy(r => r.Question.Position)
+            .OrderBy(r => r.Question.Questionnaire.Priority)
+            .ToList();
+    }
+}

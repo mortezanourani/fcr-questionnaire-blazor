@@ -1,4 +1,4 @@
-﻿@page "/Dashboard/Results"
+﻿@page "/Dashboard/Participants"
 
 <header class="page-header">
     <div class="container">
@@ -23,7 +23,7 @@
                 <PropertyColumn IsDefaultSortColumn=true InitialSortDirection="SortDirection.Descending" Title="تاریخ پاسخگویی" Property="@(paticipant => paticipant.SubmissionTime)" />
                 <PropertyColumn Title="تعداد پاسخ ها" Property="@(paticipant => paticipant.Responses!.Count)" />
                 <TemplateColumn Title="">
-                    <NavLink class="small-link" href="@($"/Dashboard/Paticipants/Details/{context.Id}")">جزئیات</NavLink>
+                    <NavLink class="small-link" href="@($"/Dashboard/Participants/Answers/{context.Id}")">جزئیات</NavLink>
                 </TemplateColumn>
             </QuickGrid>
         }
